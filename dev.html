@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UsForge News Editor</title>
+<style>
+  :root {
+    --bg: #14112e;
+    --panel: #1d1842;
+    --card: #221e4d;
+    --card-line: #35307a;
+    --ink: #f6f4ff;
+    --ink-soft: #c9c5ee;
+    --ink-dim: #938ec4;
+    --fire: #ff7a1a;
+    --fire-hot: #ffc93c;
+    --game: #3ddc84;
+    --update: #4cc3ff;
+    --event: #ff5fa2;
+    --site: #ffc93c;
+    --other: #b9a7ff;
+    --danger: #ff6b6b;
+  }
+
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+  }
+
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 20px clamp(12px, 3vw, 24px) 60px; }
+
+  h1 { margin: 0; font-size: clamp(22px, 5vw, 30px); font-weight: 900; }
+  h1 span { color: var(--fire); }
+  .lead { margin: 4px 0 20px; color: var(--ink-soft); }
+
+  .cols { display: grid; gap: 18px; grid-template-columns: minmax(0, 1fr); }
+  @media (min-width: 880px) { .cols { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; } }
+
+  .panel {
+    min-width: 0;
+    padding: 18px;
+    border: 2px solid var(--card-line);
+    border-radius: 16px;
+    background: var(--panel);
+  }
+
+  .panel + .panel { margin-top: 18px; }
+
+  .panel h2 { display: flex; align-items: center; gap: 10px; margin: 0 0 6px; font-size: 18px; }
+
+  .step {
+    flex: none;
+    display: inline-grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--fire);
+    color: #fff;
+    font-size: 15px;
+    font-weight: 900;
+  }
+
+  .hint { margin: 0 0 12px; color: var(--ink-soft); font-size: 14px; }
+  .hint code, ol code {
+    padding: 1px 5px;
+    border-radius: 5px;
+    background: #0e0b24;
+    color: var(--fire-hot);
+    font-size: 13px;
+  }
+
+  label { display: block; margin: 12px 0 4px; font-size: 14px; font-weight: 700; }
+  label small { color: var(--ink-dim); font-weight: 500; }
+
+  input[type="text"], input[type="date"], input[type="url"], select, textarea {
+    width: 100%;
+    padding: 9px 11px;
+    border: 2px solid var(--card-line);
+    border-radius: 10px;
+    background: #120f2b;
+    color: var(--ink);
+    font: inherit;
+    color-scheme: dark;
+  }
+
+  textarea { min-height: 150px; resize: vertical; }
+
+  input:focus, select:focus, textarea:focus { outline: none; border-color: var(--fire); }
+
+  .row { display: grid; gap: 12px; grid-template-columns: 1fr 1fr; }
+
+  .check { display: flex; align-items: center; gap: 8px; margin-top: 14px; font-weight: 700; cursor: pointer; }
+  .check input { width: 18px; height: 18px; accent-color: var(--fire); }
+
+  .btns { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+
+  button, .filebtn {
+    display: inline-block;
+    padding: 9px 16px;
+    border: 2px solid var(--card-line);
+    border-radius: 10px;
+    background: var(--card);
+    color: var(--ink);
+    font: inherit;
+    font-size: 14px;
+    font-weight: 800;
+    cursor: pointer;
+  }
+
+  button:hover, .filebtn:hover { border-color: var(--ink-dim); }
+  button:disabled { opacity: .45; cursor: not-allowed; }
+  button.primary { background: var(--fire); border-color: var(--fire); color: #fff; }
+  button.primary:hover { filter: brightness(1.1); }
+  button.big { padding: 12px 20px; font-size: 16px; }
+  button.danger { color: var(--danger); }
+  button.small { padding: 5px 11px; font-size: 13px; }
+  button:focus-visible, .filebtn:focus-within { outline: 3px solid #fff; outline-offset: 2px; }
+
+  .filebtn input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+
+  details { margin-top: 12px; }
+  summary { color: var(--ink-soft); font-size: 14px; font-weight: 700; cursor: pointer; }
+
+  .msg { min-height: 1.4em; margin: 10px 0 0; font-size: 14px; font-weight: 700; color: var(--game); }
+  .msg.bad { color: var(--danger); }
+
+  .preview-box {
+    padding: 14px;
+    border-radius: 12px;
+    background: radial-gradient(rgba(255, 255, 255, .045) 1.5px, transparent 1.5px) 0 0 / 22px 22px, var(--bg);
+  }
+
+  .list { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+
+  .list li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 10px;
+    padding: 10px 12px;
+    border: 2px solid var(--card-line);
+    border-left: 6px solid var(--c);
+    border-radius: 10px;
+    background: var(--card);
+  }
+
+  .list li.editing { border-color: var(--fire); border-left-color: var(--c); }
+  .list .t { flex: 1 1 200px; min-width: 0; font-weight: 700; overflow-wrap: anywhere; }
+  .list .d { color: var(--ink-dim); font-size: 13px; }
+  .list .b { display: flex; gap: 6px; }
+  .none { color: var(--ink-dim); font-size: 14px; }
+
+  #output { min-height: 120px; margin-top: 12px; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 12px; white-space: pre; }
+
+  ol { margin: 10px 0 0; padding-left: 22px; color: var(--ink-soft); font-size: 14px; }
+  ol li { margin: 4px 0; }
+
+  /* ----- Card look, same as index.html ----- */
+
+  .t-game   { --c: var(--game); }
+  .t-update { --c: var(--update); }
+  .t-event  { --c: var(--event); }
+  .t-site   { --c: var(--site); }
+  .t-other  { --c: var(--other); }
+
+  .card {
+    padding: 16px 18px 18px;
+    border: 2px solid var(--card-line);
+    border-top: 6px solid var(--c);
+    border-radius: 16px;
+    background: var(--card);
+    box-shadow: 0 6px 0 rgba(0, 0, 0, .35);
+  }
+
+  .card.pinned {
+    border-color: var(--fire-hot);
+    border-top-color: var(--c);
+    background: linear-gradient(180deg, rgba(255, 201, 60, .1), transparent 90px), var(--card);
+  }
+
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 8px;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+  }
+
+  .chip { padding: 2px 10px; border-radius: 99px; background: var(--c); color: #15112c; }
+  .pin { color: var(--fire-hot); }
+  .badge-new { padding: 2px 9px; border-radius: 6px; background: var(--fire); color: #fff; transform: rotate(-3deg); }
+  .date { margin-left: auto; color: var(--ink-dim); font-weight: 700; letter-spacing: 0; text-transform: none; font-size: 13px; }
+  .card h3 { margin: 10px 0 6px; font-size: 20px; font-weight: 800; line-height: 1.25; overflow-wrap: anywhere; }
+  .text { color: var(--ink-soft); white-space: pre-line; overflow-wrap: anywhere; }
+  .link {
+    display: inline-block;
+    margin-top: 12px;
+    padding: 8px 16px;
+    border-radius: 10px;
+    background: var(--c);
+    color: #15112c;
+    font-size: 14px;
+    font-weight: 800;
+    text-decoration: none;
+    box-shadow: 0 4px 0 rgba(0, 0, 0, .4);
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>UsForge <span>News</span> Editor</h1>
+  <p class="lead">Write your announcements here, then copy the finished list into <b>index.html</b>. This page is only for you: don't upload it.</p>
+
+  <div class="cols">
+
+    <div>
+      <section class="panel">
+        <h2><span class="step">1</span> Load your current posts</h2>
+        <p class="hint">Pick your <code>index.html</code> so the editor starts with the posts that are already live.</p>
+        <label class="filebtn">Open index.html…<input type="file" id="file" accept=".html,.htm,text/html"></label>
+        <details>
+          <summary>Or paste the list instead</summary>
+          <textarea id="pasteBox" style="min-height:90px;margin-top:8px" placeholder="Paste the announcements list from index.html here" aria-label="Paste the announcements list"></textarea>
+          <div class="btns" style="margin-top:8px"><button type="button" id="pasteBtn">Load pasted list</button></div>
+        </details>
+        <p class="msg" id="loadMsg" role="status"></p>
+      </section>
+
+      <section class="panel">
+        <h2><span class="step">2</span> <span id="formTitle">Write a new post</span></h2>
+        <form id="form" autocomplete="off">
+          <label for="fTitle">Title</label>
+          <input type="text" id="fTitle" maxlength="140" placeholder="Big news!">
+
+          <div class="row">
+            <div>
+              <label for="fDate">Date</label>
+              <input type="date" id="fDate">
+            </div>
+            <div>
+              <label for="fTag">Tag</label>
+              <select id="fTag">
+                <option>New Game</option>
+                <option>Update</option>
+                <option>Event</option>
+                <option>Site News</option>
+              </select>
+            </div>
+          </div>
+
+          <label for="fText">Text</label>
+          <textarea id="fText" placeholder="What do you want to tell players? Press Enter for a new line."></textarea>
+
+          <label for="fLink">Link <small>(optional)</small></label>
+          <input type="url" id="fLink" placeholder="https://…">
+
+          <label class="check"><input type="checkbox" id="fPinned"> Pinned (stays at the top)</label>
+
+          <div class="btns">
+            <button type="submit" class="primary" id="saveBtn">Add post</button>
+            <button type="button" id="cancelBtn" hidden>Cancel</button>
+          </div>
+          <p class="msg" id="formMsg" role="status"></p>
+        </form>
+      </section>
+    </div>
+
+    <div>
+      <section class="panel">
+        <h2>Live preview</h2>
+        <div class="preview-box" id="preview"></div>
+      </section>
+
+      <section class="panel">
+        <h2>Your posts <small id="count" style="color:var(--ink-dim);font-weight:600"></small></h2>
+        <ul class="list" id="list"></ul>
+      </section>
+
+      <section class="panel">
+        <h2><span class="step">3</span> Put it on the site</h2>
+        <div class="btns" style="margin-top:8px">
+          <button type="button" class="primary big" id="copyBtn">Copy announcements list</button>
+          <button type="button" class="big" id="downloadBtn" disabled>Download updated index.html</button>
+        </div>
+        <p class="msg" id="copyMsg" role="status"></p>
+
+        <p class="hint" style="margin-top:14px"><b>Where to paste it:</b></p>
+        <ol>
+          <li>Open <code>index.html</code> in a text editor (Notepad, TextEdit, VS Code…).</li>
+          <li>Near the top, find the line that starts with <code>// &gt;&gt;&gt; ANNOUNCEMENTS START</code>.</li>
+          <li>Select from that line down to the line that starts with <code>// &lt;&lt;&lt; ANNOUNCEMENTS END</code>, both lines included.</li>
+          <li>Paste. The old list is replaced by the new one. Save.</li>
+          <li>Re-upload <code>index.html</code> to UsForge.</li>
+        </ol>
+        <p class="hint" style="margin-top:12px"><b>Shortcut:</b> if you opened your index.html in step 1, press <b>Download updated index.html</b> and upload that file. No pasting needed.</p>
+
+        <details>
+          <summary>Show the list that will be copied</summary>
+          <textarea id="output" readonly aria-label="Generated announcements list"></textarea>
+        </details>
+      </section>
+    </div>
+
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var START_MARK = "// >>> ANNOUNCEMENTS START";
+  var END_MARK = "// <<< ANNOUNCEMENTS END";
+  var KEEP = " (do not change or delete this line)";
+  var DRAFT_KEY = "usforge-news-editor-draft-v1";
+  var TAG_CLASS = { "New Game": "t-game", "Update": "t-update", "Event": "t-event", "Site News": "t-site" };
+  var MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+  function $(id) { return document.getElementById(id); }
+
+  var fTitle = $("fTitle"), fDate = $("fDate"), fTag = $("fTag"), fText = $("fText"),
+      fLink = $("fLink"), fPinned = $("fPinned");
+
+  var posts = [];        // the working list
+  var editing = -1;      // index of the post being edited, -1 = writing a new one
+  var loadedFile = null; // text of the opened index.html, for the download button
+
+  /* ---------- Draft kept in the browser so a refresh loses nothing ---------- */
+
+  try {
+    var d = JSON.parse(localStorage.getItem(DRAFT_KEY) || "[]");
+    if (Array.isArray(d)) posts = d.map(clean);
+  } catch (e) {}
+
+  function saveDraft() {
+    try { localStorage.setItem(DRAFT_KEY, JSON.stringify(posts)); } catch (e) {}
+  }
+
+  /* ---------- Helpers ---------- */
+
+  function clean(p) {
+    p = p || {};
+    return {
+      title: String(p.title || "").trim(),
+      date: String(p.date || "").trim(),
+      tag: String(p.tag || "Site News").trim(),
+      text: String(p.text || "").replace(/\r\n?/g, "\n").trim(),
+      link: String(p.link || "").trim(),
+      pinned: p.pinned === true
+    };
+  }
+
+  function today() {
+    var n = new Date();
+    return n.getFullYear() + "-" + ("0" + (n.getMonth() + 1)).slice(-2) + "-" + ("0" + n.getDate()).slice(-2);
+  }
+
+  function prettyDate(s) {
+    var m = /^(\d{4})-(\d{1,2})-(\d{1,2})$/.exec(s);
+    return m ? MONTHS[+m[2] - 1] + " " + (+m[3]) + ", " + m[1] : s;
+  }
+
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    return n;
+  }
+
+  function say(node, text, bad) {
+    node.textContent = text;
+    node.className = "msg" + (bad ? " bad" : "");
+    clearTimeout(node._t);
+    if (!bad) node._t = setTimeout(function () { node.textContent = ""; }, 5000);
+  }
+
+  function readForm() {
+    return clean({
+      title: fTitle.value, date: fDate.value, tag: fTag.value,
+      text: fText.value, link: fLink.value, pinned: fPinned.checked
+    });
+  }
+
+  function fillForm(p) {
+    fTitle.value = p.title;
+    fDate.value = p.date;
+    fTag.value = TAG_CLASS[p.tag] ? p.tag : "Site News";
+    fText.value = p.text;
+    fLink.value = p.link;
+    fPinned.checked = p.pinned;
+  }
+
+  function resetForm() {
+    editing = -1;
+    fillForm({ title: "", date: today(), tag: "New Game", text: "", link: "", pinned: false });
+    $("formTitle").textContent = "Write a new post";
+    $("saveBtn").textContent = "Add post";
+    $("cancelBtn").hidden = true;
+  }
+
+  /* ---------- Writing the list as text ---------- */
+
+  function quote(s) {
+    return JSON.stringify(s).replace(/<\//g, "<\\/");
+  }
+
+  function tick(s) {
+    return "`" + s.replace(/\\/g, "\\\\").replace(/`/g, "\\`").replace(/\$\{/g, "\\${").replace(/<\//g, "<\\/") + "`";
+  }
+
+  function generate() {
+    var sorted = posts.slice().sort(function (a, b) {
+      return a.date < b.date ? 1 : a.date > b.date ? -1 : 0;
+    });
+    var out = START_MARK + KEEP + "\nvar ANNOUNCEMENTS = [\n\n";
+    sorted.forEach(function (p) {
+      out += "  {\n";
+      out += "    title: " + quote(p.title) + ",\n";
+      out += "    date: " + quote(p.date) + ",\n";
+      out += "    tag: " + quote(p.tag) + ",\n";
+      if (p.pinned) out += "    pinned: true,\n";
+      if (p.link) out += "    link: " + quote(p.link) + ",\n";
+      out += "    text: " + tick(p.text) + "\n";
+      out += "  },\n\n";
+    });
+    out += "];\n" + END_MARK + KEEP;
+    return out;
+  }
+
+  /* ---------- Reading a list back in ---------- */
+
+  // Returns { start, end } of the marked region (whole lines), or null.
+  function findRegion(text) {
+    var a = text.indexOf(START_MARK);
+    var b = text.indexOf(END_MARK, a + 1);
+    if (a < 0 || b < 0) return null;
+    var endLine = text.indexOf("\n", b);
+    return { start: a, end: endLine < 0 ? text.length : endLine };
+  }
+
+  function parseList(text) {
+    var r = findRegion(text);
+    var chunk = r ? text.slice(r.start, r.end) : text;
+    var a = chunk.indexOf("["), b = chunk.lastIndexOf("]");
+    if (a < 0 || b <= a) throw new Error("no list");
+    // The list is written as a small piece of JavaScript, so let the browser read it.
+    var list = new Function("return (" + chunk.slice(a, b + 1) + ");")();
+    if (!Array.isArray(list)) throw new Error("not a list");
+    return list.filter(function (p) { return p && typeof p === "object"; }).map(clean);
+  }
+
+  function load(text, isFile) {
+    var list;
+    try {
+      list = parseList(text);
+    } catch (e) {
+      say($("loadMsg"), isFile
+        ? "Couldn't find the announcements list in that file. Is it the right index.html?"
+        : "Couldn't read that. Copy from the ANNOUNCEMENTS START line to the ANNOUNCEMENTS END line.", true);
+      return;
+    }
+    if (posts.length && !confirm("Replace the " + posts.length + " post(s) in the editor with the " + list.length + " you just loaded?")) return;
+    posts = list;
+    loadedFile = isFile && findRegion(text) ? text : null;
+    saveDraft();
+    resetForm();
+    refresh();
+    say($("loadMsg"), "Loaded " + list.length + " post(s).");
+  }
+
+  $("file").addEventListener("change", function () {
+    var f = this.files && this.files[0];
+    if (!f) return;
+    var reader = new FileReader();
+    reader.onload = function () { load(String(reader.result), true); };
+    reader.onerror = function () { say($("loadMsg"), "Couldn't open that file.", true); };
+    reader.readAsText(f);
+    this.value = "";
+  });
+
+  $("pasteBtn").addEventListener("click", function () {
+    if (!$("pasteBox").value.trim()) { say($("loadMsg"), "Paste the list into the box first.", true); return; }
+    load($("pasteBox").value, false);
+  });
+
+  /* ---------- Drawing ---------- */
+
+  function buildCard(p) {
+    var card = el("article", "card " + (TAG_CLASS[p.tag] || "t-other") + (p.pinned ? " pinned" : ""));
+    var meta = el("div", "meta");
+    meta.appendChild(el("span", "chip", p.tag));
+    if (p.pinned) meta.appendChild(el("span", "pin", "\u2605 Pinned"));
+    meta.appendChild(el("span", "badge-new", "New"));
+    meta.appendChild(el("span", "date", prettyDate(p.date)));
+    card.appendChild(meta);
+    card.appendChild(el("h3", "", p.title || "Your title"));
+    card.appendChild(el("div", "text", p.text || "Your text will show up here."));
+    if (p.link) {
+      var a = el("a", "link", p.tag === "New Game" ? "Play now \u2197" : "Open link \u2197");
+      a.href = /^https?:\/\//i.test(p.link) ? p.link : "#";
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      card.appendChild(a);
+    }
+    return card;
+  }
+
+  function drawPreview() {
+    var box = $("preview");
+    box.textContent = "";
+    box.appendChild(buildCard(readForm()));
+  }
+
+  function drawList() {
+    var ul = $("list");
+    ul.textContent = "";
+    $("count").textContent = posts.length ? "(" + posts.length + ")" : "";
+    if (!posts.length) {
+      ul.appendChild(el("li", "none t-other", "No posts yet. Load your index.html in step 1, or write your first post in step 2."));
+      return;
+    }
+    // Same order visitors will see: pinned first, then newest.
+    var order = posts.map(function (p, i) { return i; }).sort(function (a, b) {
+      var A = posts[a], B = posts[b];
+      return (B.pinned - A.pinned) || (A.date < B.date ? 1 : A.date > B.date ? -1 : a - b);
+    });
+    order.forEach(function (i) {
+      var p = posts[i];
+      var li = el("li", (TAG_CLASS[p.tag] || "t-other") + (i === editing ? " editing" : ""));
+      li.appendChild(el("span", "t", (p.pinned ? "\u2605 " : "") + p.title));
+      li.appendChild(el("span", "d", p.tag + " \u00B7 " + prettyDate(p.date)));
+      var b = el("span", "b");
+      var edit = el("button", "small", "Edit");
+      edit.type = "button";
+      edit.addEventListener("click", function () { startEdit(i); });
+      var del = el("button", "small danger", "Delete");
+      del.type = "button";
+      del.addEventListener("click", function () { remove(i); });
+      b.appendChild(edit);
+      b.appendChild(del);
+      li.appendChild(b);
+      ul.appendChild(li);
+    });
+  }
+
+  function refresh() {
+    drawPreview();
+    drawList();
+    $("output").value = generate();
+    $("downloadBtn").disabled = !loadedFile;
+  }
+
+  /* ---------- Add, edit, delete ---------- */
+
+  function startEdit(i) {
+    editing = i;
+    fillForm(posts[i]);
+    $("formTitle").textContent = "Edit post";
+    $("saveBtn").textContent = "Save changes";
+    $("cancelBtn").hidden = false;
+    refresh();
+    $("form").scrollIntoView({ behavior: "smooth", block: "start" });
+    fTitle.focus({ preventScroll: true });
+  }
+
+  function remove(i) {
+    if (!confirm('Delete "' + posts[i].title + '"?')) return;
+    posts.splice(i, 1);
+    if (editing === i) resetForm();
+    else if (editing > i) editing--;
+    saveDraft();
+    refresh();
+  }
+
+  $("form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var p = readForm();
+    if (!p.title) { say($("formMsg"), "Give the post a title.", true); fTitle.focus(); return; }
+    if (!p.date) { say($("formMsg"), "Pick a date.", true); fDate.focus(); return; }
+    if (!p.text) { say($("formMsg"), "Write some text.", true); fText.focus(); return; }
+    if (p.link && !/^https?:\/\//i.test(p.link)) {
+      say($("formMsg"), "The link should start with https://", true); fLink.focus(); return;
+    }
+    var wasEditing = editing >= 0;
+    if (wasEditing) posts[editing] = p; else posts.push(p);
+    saveDraft();
+    resetForm();
+    refresh();
+    say($("formMsg"), wasEditing ? "Changes saved. Now go to step 3." : "Post added. Now go to step 3.");
+  });
+
+  $("cancelBtn").addEventListener("click", function () { resetForm(); refresh(); });
+
+  [fTitle, fDate, fTag, fText, fLink, fPinned].forEach(function (f) {
+    f.addEventListener("input", drawPreview);
+    f.addEventListener("change", drawPreview);
+  });
+
+  /* ---------- Copy and download ---------- */
+
+  function unsavedWarning() {
+    var f = readForm();
+    var dirty = editing >= 0 ? JSON.stringify(f) !== JSON.stringify(posts[editing]) : !!(f.title || f.text);
+    return dirty ? " Heads up: the post in the form isn't saved yet, so it's not included." : "";
+  }
+
+  $("copyBtn").addEventListener("click", function () {
+    var text = generate();
+    var note = unsavedWarning();
+    function ok() { say($("copyMsg"), "Copied! Now paste it into index.html (see below)." + note, !!note); }
+    function fallback() {
+      var out = $("output");
+      out.closest("details").open = true;
+      out.focus();
+      out.select();
+      var done = false;
+      try { done = document.execCommand("copy"); } catch (e) {}
+      if (done) ok();
+      else say($("copyMsg"), "Couldn't copy automatically. The list is selected below: press Ctrl+C (or Cmd+C).", true);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(ok, fallback);
+    else fallback();
+  });
+
+  $("downloadBtn").addEventListener("click", function () {
+    var r = loadedFile && findRegion(loadedFile);
+    if (!r) return;
+    var updated = loadedFile.slice(0, r.start) + generate() + loadedFile.slice(r.end);
+    var url = URL.createObjectURL(new Blob([updated], { type: "text/html" }));
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = "index.html";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
+    var note = unsavedWarning();
+    say($("copyMsg"), "Downloaded. Upload that index.html to UsForge." + note, !!note);
+  });
+
+  resetForm();
+  refresh();
+})();
+</script>
+</body>
+</html>

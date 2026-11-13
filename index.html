@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UsForge News</title>
+
+<script>
+/* ======================================================================
+   EDIT ANNOUNCEMENTS HERE
+   ======================================================================
+
+   HOW TO ADD AN ANNOUNCEMENT (no coding needed):
+
+   1. Copy one whole block below: from its opening  {  down to its
+      closing  },  (include the comma).
+   2. Paste it right under the line that says  var ANNOUNCEMENTS = [
+   3. Change the words inside the quotes. That's it.
+
+   WHAT EACH LINE MEANS:
+
+     title:  the headline.
+     date:   the day, written as "YEAR-MONTH-DAY", e.g. "2026-11-12".
+     tag:    exactly one of:  "New Game"   "Update"   "Event"   "Site News"
+     pinned: true   keeps the post stuck at the top.
+             Delete the whole line (or write false) for a normal post.
+     link:   a web address for the button. Delete the whole line for no link.
+     text:   the message. It sits between two ` marks (the key under Esc),
+             so you can press Enter for new lines and use " and ' freely.
+
+   RULES SO NOTHING BREAKS:
+
+     - Keep the quotes "like this" around your words.
+     - Keep the comma at the end of each line, and after each  },
+     - Don't type a " inside a title. Don't type a ` inside the text.
+
+   The order of the blocks doesn't matter: the page sorts them by date.
+   Prefer a form? Open dev.html, it writes this list for you.
+   ====================================================================== */
+
+// >>> ANNOUNCEMENTS START (do not change or delete this line)
+var ANNOUNCEMENTS = [
+
+  {
+    title: "Welcome to UsForge News!",
+    date: "2026-11-12",
+    tag: "Site News",
+    pinned: true,
+    text: `This is the place to find out what's happening on UsForge: new games, updates to the ones you already play, and events.
+
+Posts you haven't seen yet get a NEW badge, so you can tell at a glance what changed since your last visit. Use the buttons at the top to show only one kind of news.`
+  },
+
+  {
+    title: "Example: a new game has landed",
+    date: "2026-11-10",
+    tag: "New Game",
+    link: "https://example.com",
+    text: `This is an example post. Replace it with your own announcement.
+
+Say what the game is, how you play it, and why it's worth a try. The link above turns into a "Play now" button.`
+  },
+
+  {
+    title: "Example: big update with new levels",
+    date: "2026-11-05",
+    tag: "Update",
+    text: `This is an example of a longer post, so you can see how "Read more" works.
+
+What's new:
+- Ten new levels in the lava world
+- A boss fight at the end of each world
+- Saves now work on phones
+- Jumping feels snappier
+
+What we fixed:
+- The game no longer freezes when you pause during a cutscene
+- The sound stays off when you turn it off
+- Scores above 99,999 now show correctly
+
+Thanks to everyone who sent in bug reports. Keep them coming!`
+  },
+
+  {
+    title: "Example: weekend high score challenge",
+    date: "2026-10-30",
+    tag: "Event",
+    text: `This is an example event post. Tell players when it starts, when it ends, and what they have to do.`
+  },
+
+];
+// <<< ANNOUNCEMENTS END (do not change or delete this line)
+</script>
+
+<style>
+  :root {
+    --bg: #14112e;
+    --bg2: #1d1842;
+    --card: #221e4d;
+    --card-line: #35307a;
+    --ink: #f6f4ff;
+    --ink-soft: #c9c5ee;
+    --ink-dim: #938ec4;
+    --fire: #ff7a1a;
+    --fire-hot: #ffc93c;
+    --game: #3ddc84;
+    --update: #4cc3ff;
+    --event: #ff5fa2;
+    --site: #ffc93c;
+    --other: #b9a7ff;
+  }
+
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+
+  html, body { height: 100%; margin: 0; }
+
+  body {
+    background:
+      radial-gradient(circle at 15% -10%, rgba(255, 122, 26, .22), transparent 45%),
+      radial-gradient(circle at 95% 0%, rgba(255, 95, 162, .16), transparent 40%),
+      radial-gradient(rgba(255, 255, 255, .045) 1.5px, transparent 1.5px) 0 0 / 22px 22px,
+      linear-gradient(180deg, var(--bg2), var(--bg) 480px);
+    background-color: var(--bg);
+    background-attachment: scroll;
+    color: var(--ink);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .wrap {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 0 clamp(12px, 4vw, 24px) 40px;
+  }
+
+  /* ---------- Header ---------- */
+
+  .hero {
+    position: relative;
+    padding: clamp(18px, 6vmin, 44px) 0 clamp(10px, 3vmin, 20px);
+    text-align: center;
+    overflow: hidden;
+  }
+
+  .hero h1 {
+    position: relative;
+    margin: 0;
+    font-family: "Arial Black", "Segoe UI Black", "Helvetica Neue", system-ui, sans-serif;
+    font-weight: 900;
+    font-style: italic;
+    font-size: clamp(30px, 10vw, 64px);
+    line-height: 1;
+    letter-spacing: -.02em;
+    text-transform: uppercase;
+    text-shadow: 0 .06em 0 rgba(0, 0, 0, .45);
+    animation: drop .5s cubic-bezier(.2, 1.4, .4, 1) both;
+  }
+
+  .hero h1 .forge {
+    background: linear-gradient(180deg, var(--fire-hot), var(--fire) 70%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: none;
+    filter: drop-shadow(0 .06em 0 rgba(0, 0, 0, .45));
+  }
+
+  .hero h1 .news {
+    display: inline-block;
+    padding: .08em .3em .1em;
+    margin-left: .08em;
+    font-size: .62em;
+    vertical-align: .22em;
+    color: #1a1304;
+    background: var(--fire-hot);
+    border-radius: .28em;
+    text-shadow: none;
+    transform: rotate(-4deg);
+    box-shadow: 0 .14em 0 rgba(0, 0, 0, .4);
+  }
+
+  .hero p {
+    position: relative;
+    margin: clamp(8px, 2vmin, 14px) 0 0;
+    color: var(--ink-soft);
+    font-size: clamp(13px, 3.4vw, 16px);
+    font-weight: 600;
+  }
+
+  .new-count {
+    display: inline-block;
+    margin-left: 6px;
+    padding: 1px 9px;
+    border-radius: 99px;
+    background: var(--fire);
+    color: #fff;
+    font-weight: 800;
+    font-size: .85em;
+    white-space: nowrap;
+  }
+
+  .embers { position: absolute; inset: 0; pointer-events: none; }
+
+  .embers i {
+    position: absolute;
+    bottom: -8px;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--fire-hot);
+    box-shadow: 0 0 8px 2px rgba(255, 122, 26, .8);
+    opacity: 0;
+    animation: rise linear infinite;
+  }
+
+  /* ---------- Filters ---------- */
+
+  .filters {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    display: flex;
+    gap: 8px;
+    margin: 0 calc(-1 * clamp(12px, 4vw, 24px));
+    padding: 10px clamp(12px, 4vw, 24px);
+    overflow-x: auto;
+    scrollbar-width: none;
+    background: rgba(20, 17, 46, .88);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+  }
+
+  .filters::-webkit-scrollbar { display: none; }
+
+  .filters::before, .filters::after { content: ""; margin: auto; }
+
+  .filters button {
+    --c: var(--ink);
+    flex: none;
+    padding: 7px 14px;
+    border: 2px solid var(--card-line);
+    border-radius: 99px;
+    background: var(--card);
+    color: var(--ink-soft);
+    font: inherit;
+    font-size: 14px;
+    font-weight: 800;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: transform .12s, background .12s, color .12s, border-color .12s;
+  }
+
+  .filters button::before {
+    content: "";
+    display: inline-block;
+    width: 9px;
+    height: 9px;
+    margin-right: 7px;
+    border-radius: 50%;
+    background: var(--c);
+  }
+
+  .filters button:hover { border-color: var(--c); color: var(--ink); }
+  .filters button:active { transform: scale(.94); }
+
+  .filters button[aria-pressed="true"] {
+    background: var(--c);
+    border-color: var(--c);
+    color: #15112c;
+    box-shadow: 0 3px 0 rgba(0, 0, 0, .4);
+  }
+
+  .filters button[aria-pressed="true"]::before { background: #15112c; }
+
+  button:focus-visible, a:focus-visible {
+    outline: 3px solid #fff;
+    outline-offset: 2px;
+  }
+
+  /* ---------- Cards ---------- */
+
+  .feed { display: grid; gap: 16px; margin-top: 10px; }
+
+  .t-game   { --c: var(--game); }
+  .t-update { --c: var(--update); }
+  .t-event  { --c: var(--event); }
+  .t-site   { --c: var(--site); }
+  .t-other  { --c: var(--other); }
+
+  .card {
+    position: relative;
+    min-width: 0;
+    padding: 16px clamp(14px, 4vw, 22px) 18px;
+    border: 2px solid var(--card-line);
+    border-top: 6px solid var(--c);
+    border-radius: 16px;
+    background: var(--card);
+    box-shadow: 0 6px 0 rgba(0, 0, 0, .35);
+    animation: pop .45s cubic-bezier(.2, 1.2, .4, 1) both;
+    transition: transform .15s, box-shadow .15s;
+  }
+
+  @media (hover: hover) {
+    .card:hover { transform: translateY(-3px); box-shadow: 0 9px 0 rgba(0, 0, 0, .35); }
+  }
+
+  .card.pinned {
+    border-color: var(--fire-hot);
+    border-top-color: var(--c);
+    background: linear-gradient(180deg, rgba(255, 201, 60, .1), transparent 90px), var(--card);
+  }
+
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 8px;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+  }
+
+  .chip {
+    padding: 2px 10px;
+    border-radius: 99px;
+    background: var(--c);
+    color: #15112c;
+  }
+
+  .pin { color: var(--fire-hot); }
+
+  .badge-new {
+    padding: 2px 9px;
+    border-radius: 6px;
+    background: var(--fire);
+    color: #fff;
+    transform: rotate(-3deg);
+    animation: pulse 1.6s ease-in-out infinite;
+  }
+
+  .date {
+    margin-left: auto;
+    color: var(--ink-dim);
+    font-weight: 700;
+    letter-spacing: 0;
+    text-transform: none;
+    font-size: 13px;
+  }
+
+  .card h2 {
+    margin: 10px 0 6px;
+    font-size: clamp(18px, 4.6vw, 22px);
+    font-weight: 800;
+    line-height: 1.25;
+    overflow-wrap: anywhere;
+  }
+
+  .text {
+    color: var(--ink-soft);
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+  }
+
+  .text.clamp {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 5;
+    overflow: hidden;
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 16px;
+    margin-top: 12px;
+  }
+
+  .actions:empty { display: none; }
+
+  .more {
+    padding: 4px 0;
+    border: 0;
+    background: none;
+    color: var(--c);
+    font: inherit;
+    font-size: 14px;
+    font-weight: 800;
+    cursor: pointer;
+  }
+
+  .more:hover { text-decoration: underline; }
+
+  .link {
+    display: inline-block;
+    padding: 8px 16px;
+    border-radius: 10px;
+    background: var(--c);
+    color: #15112c;
+    font-size: 14px;
+    font-weight: 800;
+    text-decoration: none;
+    box-shadow: 0 4px 0 rgba(0, 0, 0, .4);
+    transition: transform .1s, box-shadow .1s;
+  }
+
+  .link:hover { transform: translateY(-1px); box-shadow: 0 5px 0 rgba(0, 0, 0, .4); }
+  .link:active { transform: translateY(3px); box-shadow: 0 1px 0 rgba(0, 0, 0, .4); }
+
+  .empty, .problem {
+    padding: 28px 18px;
+    border: 2px dashed var(--card-line);
+    border-radius: 16px;
+    color: var(--ink-soft);
+    text-align: center;
+    font-weight: 600;
+  }
+
+  .problem { border-color: var(--fire); text-align: left; }
+  .problem b { color: var(--fire-hot); }
+
+  /* ---------- Animations ---------- */
+
+  @keyframes pop {
+    from { opacity: 0; transform: translateY(18px) scale(.97); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  @keyframes drop {
+    from { opacity: 0; transform: translateY(-14px) scale(.9); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: rotate(-3deg) scale(1); }
+    50%      { transform: rotate(-3deg) scale(1.1); }
+  }
+
+  @keyframes rise {
+    0%   { opacity: 0; transform: translate(0, 0) scale(1); }
+    15%  { opacity: .9; }
+    100% { opacity: 0; transform: translate(var(--drift, 10px), -160px) scale(.3); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    .embers { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="hero">
+    <div class="embers" id="embers" aria-hidden="true"></div>
+    <h1>Us<span class="forge">Forge</span> <span class="news">News</span></h1>
+    <p>Fresh from the forge: new games, updates and events <span class="new-count" id="newCount" hidden></span></p>
+  </header>
+
+  <nav class="filters" id="filters" aria-label="Filter news by type"></nav>
+
+  <main class="feed" id="feed" aria-live="polite"></main>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var feed = document.getElementById("feed");
+  var filtersEl = document.getElementById("filters");
+  var newCountEl = document.getElementById("newCount");
+
+  // If the list above has a typo, the browser never creates ANNOUNCEMENTS.
+  // Say so in plain words instead of showing a blank page.
+  if (typeof ANNOUNCEMENTS === "undefined" || !Array.isArray(ANNOUNCEMENTS)) {
+    filtersEl.hidden = true;
+    var box = document.createElement("div");
+    box.className = "problem";
+    box.innerHTML = "<b>The announcements list has a typo, so the news can't be shown.</b><br>" +
+      "Open index.html and check the post you last edited: every line needs its quotes and " +
+      "the comma at the end, and every post must end with <b>},</b>";
+    feed.appendChild(box);
+    return;
+  }
+
+  var TAGS = ["New Game", "Update", "Event", "Site News"];
+  var TAG_CLASS = { "New Game": "t-game", "Update": "t-update", "Event": "t-event", "Site News": "t-site" };
+  var MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  var STORE_KEY = "usforge-news-seen-v1";
+
+  /* ---------- Reading the list ---------- */
+
+  function parseDate(s) {
+    var m = /^\s*(\d{4})-(\d{1,2})-(\d{1,2})\s*$/.exec(s);
+    if (m) return { time: Date.UTC(+m[1], +m[2] - 1, +m[3]), label: MONTHS[+m[2] - 1] + " " + (+m[3]) + ", " + m[1] };
+    return { time: 0, label: s };
+  }
+
+  // Only normal web addresses become buttons.
+  function safeLink(s) {
+    s = String(s || "").trim();
+    if (!s) return "";
+    if (/^www\./i.test(s)) return "https://" + s;
+    if (/^[a-z][a-z0-9+.-]*:/i.test(s) && !/^https?:\/\//i.test(s)) return "";
+    return s;
+  }
+
+  function hash(s) {
+    var h = 5381;
+    for (var i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0;
+    return (h >>> 0).toString(36);
+  }
+
+  var posts = ANNOUNCEMENTS.filter(function (p) {
+    return p && typeof p === "object";
+  }).map(function (p, i) {
+    var title = String(p.title || "Untitled").trim();
+    var rawDate = String(p.date || "").trim();
+    var d = parseDate(rawDate);
+    return {
+      id: hash(title + "|" + rawDate),
+      title: title,
+      time: d.time,
+      dateLabel: d.label,
+      tag: String(p.tag || "Site News").trim(),
+      text: String(p.text || "").trim(),
+      link: safeLink(p.link),
+      pinned: p.pinned === true,
+      order: i
+    };
+  });
+
+  posts.sort(function (a, b) {
+    return (b.pinned - a.pinned) || (b.time - a.time) || (a.order - b.order);
+  });
+
+  /* ---------- Remembering what the visitor has seen ---------- */
+
+  var seen = {};
+  try {
+    var saved = JSON.parse(localStorage.getItem(STORE_KEY) || "[]");
+    if (Array.isArray(saved)) saved.forEach(function (id) { seen[id] = true; });
+  } catch (e) { /* storage blocked: everything just shows as new */ }
+
+  var isNew = {};
+  var newCount = 0;
+  posts.forEach(function (p) {
+    if (!seen[p.id]) { isNew[p.id] = true; newCount++; }
+  });
+
+  if (newCount) {
+    newCountEl.textContent = newCount + " new";
+    newCountEl.hidden = false;
+  }
+
+  function markSeen(id) {
+    if (seen[id]) return;
+    seen[id] = true;
+    try {
+      // Only keep posts that still exist, so this never grows forever.
+      var ids = posts.filter(function (p) { return seen[p.id]; }).map(function (p) { return p.id; });
+      localStorage.setItem(STORE_KEY, JSON.stringify(ids));
+    } catch (e) { /* storage blocked: nothing to do */ }
+  }
+
+  // A post counts as seen once it has been on screen for a moment.
+  // The badge stays for this visit and is gone on the next one.
+  var watcher = null;
+  if ("IntersectionObserver" in window) {
+    watcher = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        var el = en.target;
+        clearTimeout(el._seenTimer);
+        if (en.isIntersecting) {
+          el._seenTimer = setTimeout(function () {
+            markSeen(el.dataset.id);
+            watcher.unobserve(el);
+          }, 1000);
+        }
+      });
+    }, { threshold: 0.2 });
+  }
+
+  /* ---------- Building the page ---------- */
+
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    return n;
+  }
+
+  function buildCard(p) {
+    var card = el("article", "card " + (TAG_CLASS[p.tag] || "t-other") + (p.pinned ? " pinned" : ""));
+    card.dataset.id = p.id;
+
+    var meta = el("div", "meta");
+    meta.appendChild(el("span", "chip", p.tag));
+    if (p.pinned) meta.appendChild(el("span", "pin", "★ Pinned"));
+    if (isNew[p.id]) meta.appendChild(el("span", "badge-new", "New"));
+    if (p.dateLabel) meta.appendChild(el("span", "date", p.dateLabel));
+    card.appendChild(meta);
+
+    card.appendChild(el("h2", "", p.title));
+
+    var text = el("div", "text clamp", p.text);
+    card.appendChild(text);
+
+    var actions = el("div", "actions");
+    if (p.link) {
+      var a = el("a", "link", p.tag === "New Game" ? "Play now ↗" : "Open link ↗");
+      a.href = p.link;
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      actions.appendChild(a);
+    }
+    var more = el("button", "more", "Read more ▾");
+    more.type = "button";
+    more.hidden = true;
+    more.setAttribute("aria-expanded", "false");
+    more.addEventListener("click", function () {
+      var open = text.classList.toggle("clamp") === false;
+      more.textContent = open ? "Show less ▴" : "Read more ▾";
+      more.setAttribute("aria-expanded", String(open));
+    });
+    actions.appendChild(more);
+    card.appendChild(actions);
+
+    return card;
+  }
+
+  // Show "Read more" only on posts whose text is actually cut off.
+  function checkClamps() {
+    var cards = feed.querySelectorAll(".card");
+    for (var i = 0; i < cards.length; i++) {
+      var text = cards[i].querySelector(".text");
+      var more = cards[i].querySelector(".more");
+      if (!text.classList.contains("clamp")) continue; // opened by the reader
+      more.hidden = text.scrollHeight <= text.clientHeight + 2;
+    }
+  }
+
+  var current = "All";
+
+  function render() {
+    feed.textContent = "";
+    var list = posts.filter(function (p) { return current === "All" || p.tag === current; });
+
+    if (!list.length) {
+      feed.appendChild(el("div", "empty", posts.length
+        ? "Nothing here yet. Try another filter!"
+        : "No news yet. Check back soon!"));
+      return;
+    }
+
+    list.forEach(function (p, i) {
+      var card = buildCard(p);
+      card.style.animationDelay = Math.min(i, 8) * 60 + "ms";
+      feed.appendChild(card);
+      if (isNew[p.id]) {
+        if (watcher) watcher.observe(card); else markSeen(p.id);
+      }
+    });
+    checkClamps();
+  }
+
+  ["All"].concat(TAGS).forEach(function (tag) {
+    var b = el("button", TAG_CLASS[tag] || "", tag);
+    b.type = "button";
+    b.setAttribute("aria-pressed", String(tag === current));
+    b.addEventListener("click", function () {
+      current = tag;
+      var all = filtersEl.querySelectorAll("button");
+      for (var i = 0; i < all.length; i++) all[i].setAttribute("aria-pressed", String(all[i] === b));
+      render();
+    });
+    filtersEl.appendChild(b);
+  });
+
+  render();
+
+  var resizeTimer;
+  window.addEventListener("resize", function () {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(checkClamps, 120);
+  });
+
+  /* ---------- Header sparks ---------- */
+
+  var embers = document.getElementById("embers");
+  for (var i = 0; i < 10; i++) {
+    var s = document.createElement("i");
+    s.style.left = (5 + Math.random() * 90) + "%";
+    s.style.setProperty("--drift", (Math.random() * 40 - 20) + "px");
+    s.style.animationDuration = (3 + Math.random() * 3) + "s";
+    s.style.animationDelay = (Math.random() * 5) + "s";
+    embers.appendChild(s);
+  }
+})();
+</script>
+</body>
+</html>
