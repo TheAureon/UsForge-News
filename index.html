@@ -94,14 +94,16 @@ Thanks to everyone who sent in bug reports. Keep them coming!`
 
 <style>
   :root {
-    --bg: #15151c;
-    --bg2: #1c1c27;
-    --card: #232330;
-    --card-line: #37374c;
+    --bg: #111113;
+    --bg2: #14151a;
+    --card: #191a21;
+    --card-line: #2b3350;
     --ink: #f4f5fb;
     --ink-soft: #c5c8dc;
     --ink-dim: #8c90aa;
     --blue: #5b8ff9;
+    --cyan: #5cc6f4;
+    --deep: #0b2bc0;
     --gold: #f2d147;
     --game: #3ddc84;
     --update: #5b8ff9;
@@ -117,12 +119,7 @@ Thanks to everyone who sent in bug reports. Keep them coming!`
   body { min-height: 100%; margin: 0; }
 
   body {
-    background:
-      radial-gradient(circle at 15% -10%, rgba(91, 143, 249, .22), transparent 45%),
-      radial-gradient(circle at 95% 0%, rgba(242, 209, 71, .2), transparent 42%),
-      linear-gradient(180deg, var(--bg2), var(--bg) 480px);
     background-color: var(--bg);
-    background-repeat: no-repeat;
     color: var(--ink);
     font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     font-size: 16px;
@@ -147,6 +144,20 @@ Thanks to everyone who sent in bug reports. Keep them coming!`
 
   .stars .twinkle { animation: twinkle 4s ease-in-out infinite; }
   .stars .twinkle.late { animation-delay: -2s; }
+
+  /* Blue and gold corner shapes behind the page */
+  .deco { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+
+  .deco svg {
+    position: absolute;
+    width: clamp(64px, 18vw, 300px);
+    height: clamp(64px, 18vw, 300px);
+  }
+
+  .deco .tl { top: 0; left: 0; }
+  .deco .tr { top: 0; right: 0; transform: scaleX(-1); }
+  .deco .bl { bottom: 0; left: 0; transform: scaleY(-1); }
+  .deco .br { bottom: 0; right: 0; transform: scale(-1); }
 
   .wrap {
     position: relative;
@@ -210,16 +221,19 @@ Thanks to everyone who sent in bug reports. Keep them coming!`
     position: relative;
     margin: clamp(8px, 2vmin, 14px) 0 0;
     color: var(--ink-soft);
-    font-size: clamp(13px, 3.4vw, 16px);
-    font-weight: 600;
+    font-size: clamp(11px, 2.9vw, 14px);
+    font-weight: 700;
+    letter-spacing: .14em;
+    text-transform: uppercase;
   }
 
   .new-count {
     display: inline-block;
     margin-left: 6px;
-    padding: 1px 9px;
-    border-radius: 99px;
+    padding: 1px 12px;
     background: var(--gold);
+    clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
+    letter-spacing: .06em;
     color: #14141b;
     font-weight: 800;
     font-size: .85em;
@@ -252,8 +266,9 @@ Thanks to everyone who sent in bug reports. Keep them coming!`
     padding: 10px clamp(12px, 4vw, 24px);
     overflow-x: auto;
     scrollbar-width: none;
-    background: rgba(21, 21, 28, .9);
-    border-bottom: 2px solid rgba(242, 209, 71, .35);
+    background: rgba(17, 17, 19, .92);
+    border-top: 1px solid var(--card-line);
+    border-bottom: 2px solid var(--gold);
     -webkit-backdrop-filter: blur(8px);
     backdrop-filter: blur(8px);
   }
@@ -262,45 +277,41 @@ Thanks to everyone who sent in bug reports. Keep them coming!`
 
   .filters::before, .filters::after { content: ""; margin: auto; }
 
+  /* Slanted "tech" buttons */
   .filters button {
-    --c: var(--ink);
+    --c: var(--cyan);
     flex: none;
-    padding: 7px 14px;
-    border: 2px solid var(--card-line);
-    border-radius: 99px;
-    background: var(--card);
+    padding: 8px 20px;
+    border: 0;
+    background: #20263a;
     color: var(--ink-soft);
     font: inherit;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 800;
+    letter-spacing: .08em;
+    text-transform: uppercase;
     white-space: nowrap;
     cursor: pointer;
-    transition: transform .12s, background .12s, color .12s, border-color .12s;
+    clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+    transition: background .12s, color .12s;
   }
 
   .filters button::before {
     content: "";
     display: inline-block;
-    width: 9px;
-    height: 9px;
-    margin-right: 7px;
-    border-radius: 50%;
+    width: 8px;
+    height: 8px;
+    margin-right: 8px;
     background: var(--c);
+    transform: rotate(45deg);
   }
 
-  .filters button:hover { border-color: var(--c); color: var(--ink); }
-  .filters button:active { transform: scale(.94); }
+  .filters button:hover { background: #2a3350; color: var(--ink); }
 
-  .filters button[aria-pressed="true"] {
-    background: var(--c);
-    border-color: var(--c);
-    color: #14141b;
-    box-shadow: 0 3px 0 rgba(0, 0, 0, .4);
-  }
+  .filters button[aria-pressed="true"] { background: var(--gold); color: #111113; }
+  .filters button[aria-pressed="true"]::before { background: #111113; }
 
-  .filters button[aria-pressed="true"]::before { background: #14141b; }
-
-  .filters button:first-child { --c: var(--gold); }
+  .filters button:focus-visible { outline-offset: -3px; outline-color: var(--ink); }
 
   button:focus-visible, a:focus-visible {
     outline: 3px solid #fff;
@@ -317,27 +328,44 @@ Thanks to everyone who sent in bug reports. Keep them coming!`
   .t-site   { --c: var(--site); }
   .t-other  { --c: var(--other); }
 
+  /* Cards have two cut corners. The outer shape is the border colour and
+     ::before paints the inside, so the border follows the cut. */
   .card {
+    --edge: var(--card-line);
+    --cut: 18px;
     position: relative;
+    isolation: isolate;
     min-width: 0;
-    padding: 16px clamp(14px, 4vw, 22px) 18px;
-    border: 2px solid var(--card-line);
-    border-top: 6px solid var(--c);
-    border-radius: 16px;
-    background: var(--card);
-    box-shadow: 0 6px 0 rgba(0, 0, 0, .35);
+    padding: 20px clamp(16px, 4vw, 24px) 20px;
+    background: var(--edge);
+    clip-path: polygon(0 0, calc(100% - var(--cut)) 0, 100% var(--cut), 100% 100%, var(--cut) 100%, 0 calc(100% - var(--cut)));
     animation: pop .45s cubic-bezier(.2, 1.2, .4, 1) both;
-    transition: transform .15s, box-shadow .15s;
+    transition: background .15s;
+  }
+
+  .card::before {
+    content: "";
+    position: absolute;
+    inset: 2px;
+    z-index: -1;
+    background:
+      linear-gradient(90deg, var(--c), var(--c)) 0 0 / 100% 4px no-repeat,
+      linear-gradient(135deg, rgba(91, 143, 249, .1), transparent 45%),
+      var(--card);
+    clip-path: polygon(0 0, calc(100% - var(--cut) + 1px) 0, 100% calc(var(--cut) - 1px), 100% 100%, calc(var(--cut) - 1px) 100%, 0 calc(100% - var(--cut) + 1px));
   }
 
   @media (hover: hover) {
-    .card:hover { transform: translateY(-3px); border-color: var(--gold); border-top-color: var(--c); box-shadow: 0 9px 0 rgba(0, 0, 0, .35); }
+    .card:hover { --edge: var(--gold); }
   }
 
-  .card.pinned {
-    border-color: var(--gold);
-    border-top-color: var(--c);
-    background: linear-gradient(180deg, rgba(242, 209, 71, .14), transparent 110px), var(--card);
+  .card.pinned { --edge: var(--gold); }
+
+  .card.pinned::before {
+    background:
+      linear-gradient(90deg, var(--gold), var(--gold)) 0 0 / 100% 4px no-repeat,
+      linear-gradient(135deg, rgba(242, 209, 71, .16), transparent 50%),
+      var(--card);
   }
 
   .meta {
@@ -352,30 +380,29 @@ Thanks to everyone who sent in bug reports. Keep them coming!`
   }
 
   .chip {
-    padding: 2px 10px;
-    border-radius: 99px;
+    padding: 2px 14px;
     background: var(--c);
-    color: #14141b;
+    color: #111113;
+    clip-path: polygon(7px 0, 100% 0, calc(100% - 7px) 100%, 0 100%);
   }
 
   .pin { color: var(--gold); }
 
   .badge-new {
-    padding: 2px 9px;
-    border-radius: 6px;
+    padding: 2px 12px;
     background: var(--gold);
-    color: #14141b;
-    transform: rotate(-3deg);
+    color: #111113;
+    clip-path: polygon(7px 0, 100% 0, calc(100% - 7px) 100%, 0 100%);
     animation: pulse 1.6s ease-in-out infinite;
   }
 
   .date {
     margin-left: auto;
     color: var(--ink-dim);
-    font-weight: 700;
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-weight: 600;
     letter-spacing: 0;
-    text-transform: none;
-    font-size: 13px;
+    font-size: 12px;
   }
 
   .card h2 {
@@ -413,10 +440,12 @@ Thanks to everyone who sent in bug reports. Keep them coming!`
     padding: 4px 0;
     border: 0;
     background: none;
-    color: var(--c);
+    color: var(--gold);
     font: inherit;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 800;
+    letter-spacing: .08em;
+    text-transform: uppercase;
     cursor: pointer;
   }
 
@@ -424,19 +453,20 @@ Thanks to everyone who sent in bug reports. Keep them coming!`
 
   .link {
     display: inline-block;
-    padding: 8px 16px;
-    border-radius: 10px;
+    padding: 8px 22px;
     background: var(--c);
-    color: #14141b;
-    font-size: 14px;
+    color: #111113;
+    font-size: 13px;
     font-weight: 800;
+    letter-spacing: .08em;
+    text-transform: uppercase;
     text-decoration: none;
-    box-shadow: 0 4px 0 rgba(0, 0, 0, .4);
-    transition: transform .1s, box-shadow .1s;
+    clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+    transition: background .12s;
   }
 
-  .link:hover { transform: translateY(-1px); box-shadow: 0 5px 0 rgba(0, 0, 0, .4); }
-  .link:active { transform: translateY(3px); box-shadow: 0 1px 0 rgba(0, 0, 0, .4); }
+  .link:hover { background: var(--gold); }
+  .link:focus-visible { outline-offset: -3px; outline-color: #111113; }
 
   .studio {
     display: flex;
@@ -460,7 +490,7 @@ Thanks to everyone who sent in bug reports. Keep them coming!`
   .empty, .problem {
     padding: 28px 18px;
     border: 2px dashed var(--card-line);
-    border-radius: 16px;
+    background: var(--card);
     color: var(--ink-soft);
     text-align: center;
     font-weight: 600;
@@ -468,94 +498,6 @@ Thanks to everyone who sent in bug reports. Keep them coming!`
 
   .problem { border-color: var(--gold); text-align: left; }
   .problem b { color: var(--gold); }
-
-  /* ---------- Mini game ---------- */
-
-  .play-btn {
-    position: relative;
-    margin-top: clamp(10px, 2.5vmin, 16px);
-    padding: 9px 20px;
-    border: 0;
-    border-radius: 99px;
-    background: var(--gold);
-    color: #14141b;
-    font: inherit;
-    font-size: 15px;
-    font-weight: 800;
-    cursor: pointer;
-    box-shadow: 0 4px 0 rgba(0, 0, 0, .45);
-    transition: transform .1s, box-shadow .1s;
-  }
-
-  .play-btn:hover { transform: translateY(-1px); box-shadow: 0 5px 0 rgba(0, 0, 0, .45); }
-  .play-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 rgba(0, 0, 0, .45); }
-
-  .game {
-    position: fixed;
-    inset: 0;
-    z-index: 20;
-    background: radial-gradient(circle at 50% 0%, #1f2740, var(--bg) 70%);
-    touch-action: none;
-    user-select: none;
-    -webkit-user-select: none;
-  }
-
-  .game canvas { display: block; width: 100%; height: 100%; }
-
-  .game-hud {
-    position: absolute;
-    top: 10px;
-    left: 12px;
-    right: 58px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px 16px;
-    font-size: 16px;
-    font-weight: 800;
-    pointer-events: none;
-  }
-
-  .game-hud .score { color: var(--gold); }
-  .game-hud .lives { color: var(--event); letter-spacing: .1em; }
-  .game-hud .best { color: var(--ink-dim); }
-
-  .game-close {
-    position: absolute;
-    top: 8px;
-    right: 10px;
-    width: 38px;
-    height: 38px;
-    border: 2px solid var(--card-line);
-    border-radius: 50%;
-    background: var(--card);
-    color: var(--ink);
-    font: inherit;
-    font-size: 16px;
-    font-weight: 800;
-    cursor: pointer;
-  }
-
-  .game-close:hover { border-color: var(--gold); }
-
-  .game-panel {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: min(360px, calc(100% - 28px));
-    max-height: calc(100% - 20px);
-    overflow: auto;
-    padding: 20px 20px 22px;
-    border: 2px solid var(--gold);
-    border-radius: 16px;
-    background: var(--card);
-    box-shadow: 0 6px 0 rgba(0, 0, 0, .4);
-    text-align: center;
-    transform: translate(-50%, -50%);
-  }
-
-  .game-panel h2 { margin: 0 0 6px; color: var(--gold); font-size: 24px; font-weight: 900; }
-  .game-panel p { margin: 0 0 6px; color: var(--ink-soft); }
-  .game-panel .how { color: var(--ink-dim); font-size: 14px; }
 
   /* ---------- Animations ---------- */
 
@@ -575,8 +517,8 @@ Thanks to everyone who sent in bug reports. Keep them coming!`
   }
 
   @keyframes pulse {
-    0%, 100% { transform: rotate(-3deg) scale(1); }
-    50%      { transform: rotate(-3deg) scale(1.1); }
+    0%, 100% { transform: scale(1); }
+    50%      { transform: scale(1.1); }
   }
 
   @keyframes rise {
@@ -593,6 +535,39 @@ Thanks to everyone who sent in bug reports. Keep them coming!`
 </style>
 </head>
 <body>
+
+<div class="deco" aria-hidden="true">
+  <svg width="0" height="0" style="position:absolute">
+    <defs>
+      <linearGradient id="gBlue" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#0b2bc0"/><stop offset="1" stop-color="#5cc6f4"/>
+      </linearGradient>
+      <linearGradient id="gFade" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#5cc6f4"/><stop offset="1" stop-color="#5cc6f4" stop-opacity="0"/>
+      </linearGradient>
+      <symbol id="cornerA" viewBox="0 0 300 300">
+        <polygon points="0,0 150,0 0,150" fill="url(#gBlue)"/>
+        <polygon points="0,0 78,0 0,78" fill="#0a1c6e"/>
+        <polygon points="0,196 196,0 216,0 0,216" fill="url(#gFade)"/>
+        <polyline points="0,246 36,246 246,36 246,0" fill="none" stroke="#f2d147" stroke-width="2.5"/>
+        <polyline points="0,172 172,0" fill="none" stroke="#fff" stroke-width="1.5" opacity=".7"/>
+        <polygon points="262,0 300,0 300,8 270,8" fill="#f2d147"/>
+      </symbol>
+      <symbol id="cornerB" viewBox="0 0 300 300">
+        <polygon points="0,0 250,0 190,60 70,60 0,130" fill="url(#gBlue)"/>
+        <polygon points="0,0 120,0 0,120" fill="#0a1c6e" opacity=".85"/>
+        <polygon points="0,150 46,104 60,118 0,178" fill="url(#gFade)"/>
+        <polyline points="30,0 64,34 196,34 230,0" fill="none" stroke="#fff" stroke-width="1.5" opacity=".8"/>
+        <polyline points="0,214 84,130 84,84 214,84 298,0" fill="none" stroke="#f2d147" stroke-width="2.5"/>
+        <polygon points="0,232 8,232 8,270 0,278" fill="#f2d147"/>
+      </symbol>
+    </defs>
+  </svg>
+  <svg class="tl"><use href="#cornerA"/></svg>
+  <svg class="tr"><use href="#cornerB"/></svg>
+  <svg class="bl"><use href="#cornerB"/></svg>
+  <svg class="br"><use href="#cornerA"/></svg>
+</div>
 
 <div class="stars" id="stars" aria-hidden="true"></div>
 
@@ -629,7 +604,6 @@ Thanks to everyone who sent in bug reports. Keep them coming!`
       </span>
     </h1>
     <p>Fresh from the forge: new games, updates and events <span class="new-count" id="newCount" hidden></span></p>
-    <button type="button" class="play-btn" id="playBtn">&#9654; Play Star Catcher</button>
   </header>
 
   <nav class="filters" id="filters" aria-label="Filter news by type"></nav>
@@ -673,23 +647,6 @@ Thanks to everyone who sent in bug reports. Keep them coming!`
       </g>
     </svg>
   </footer>
-</div>
-
-<!-- Mini game: Star Catcher -->
-<div class="game" id="game" role="dialog" aria-modal="true" aria-label="Star Catcher mini game" hidden>
-  <canvas id="gameCanvas"></canvas>
-  <div class="game-hud" aria-live="off">
-    <span class="score" id="gScore"></span>
-    <span class="lives" id="gLives"></span>
-    <span class="best" id="gBest"></span>
-  </div>
-  <button type="button" class="game-close" id="gameClose" aria-label="Close the game">&#10005;</button>
-  <div class="game-panel" id="gamePanel">
-    <h2 id="gameTitle">Star Catcher</h2>
-    <p id="gameMsg">Catch the gold stars in your umbrella. Dodge the red meteors: three hits and it's over!</p>
-    <p class="how">Move with your mouse or finger, or the &larr; &rarr; keys.</p>
-    <button type="button" class="play-btn" id="gameStart">Play</button>
-  </div>
 </div>
 
 <script>
@@ -944,295 +901,6 @@ Thanks to everyone who sent in bug reports. Keep them coming!`
     s.style.animationDelay = (Math.random() * 5) + "s";
     embers.appendChild(s);
   }
-})();
-</script>
-<script>
-/* ======================================================================
-   MINI GAME: Star Catcher. Nothing to edit here for announcements.
-   ====================================================================== */
-(function () {
-  "use strict";
-
-  var BEST_KEY = "usforge-news-starcatcher-best-v1";
-  var box = document.getElementById("game");
-  var cv = document.getElementById("gameCanvas");
-  var ctx = cv.getContext && cv.getContext("2d");
-  var playBtn = document.getElementById("playBtn");
-  if (!ctx) { playBtn.hidden = true; return; }
-
-  var panel = document.getElementById("gamePanel");
-  var startBtn = document.getElementById("gameStart");
-  var titleEl = document.getElementById("gameTitle");
-  var msgEl = document.getElementById("gameMsg");
-  var scoreEl = document.getElementById("gScore");
-  var livesEl = document.getElementById("gLives");
-  var bestEl = document.getElementById("gBest");
-
-  var W = 0, H = 0;
-  var running = false, raf = 0, last = 0;
-  var px = 0, target = null, keys = {};
-  var items = [], sparks = [], sky = [];
-  var score = 0, lives = 3, time = 0, spawnIn = 0, flash = 0, best = 0;
-
-  try { best = parseInt(localStorage.getItem(BEST_KEY), 10) || 0; } catch (e) {}
-
-  for (var i = 0; i < 60; i++) sky.push([Math.random(), Math.random(), Math.random() < 0.25]);
-
-  function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
-  function bowlW() { return clamp(W * 0.18, 56, 120); }
-  function bowlY() { return H - Math.max(52, H * 0.14); }
-
-  function hud() {
-    scoreEl.textContent = "★ " + score;
-    livesEl.textContent = "♥♥♥".slice(0, Math.max(lives, 0)) || "–";
-    bestEl.textContent = "Best " + best;
-  }
-
-  function resize() {
-    var dpr = Math.min(window.devicePixelRatio || 1, 2);
-    W = box.clientWidth;
-    H = box.clientHeight;
-    cv.width = Math.round(W * dpr);
-    cv.height = Math.round(H * dpr);
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    px = clamp(px || W / 2, 0, W);
-    if (!running) draw();
-  }
-
-  /* ----- Game rules ----- */
-
-  function start() {
-    score = 0; lives = 3; time = 0; flash = 0;
-    items = []; sparks = [];
-    spawnIn = 0.4;
-    px = W / 2; target = null; keys = {};
-    panel.hidden = true;
-    running = true;
-    hud();
-    last = performance.now();
-    raf = requestAnimationFrame(tick);
-  }
-
-  function gameOver() {
-    running = false;
-    var record = score > best;
-    if (record) {
-      best = score;
-      try { localStorage.setItem(BEST_KEY, String(best)); } catch (e) {}
-    }
-    hud();
-    titleEl.textContent = record ? "New best!" : "Game over";
-    msgEl.textContent = "You caught " + score + (score === 1 ? " star." : " stars.");
-    startBtn.textContent = "Play again";
-    panel.hidden = false;
-    startBtn.focus();
-  }
-
-  function spawn(level) {
-    var r = clamp(Math.min(W, H) * 0.035, 11, 20);
-    items.push({
-      x: r + Math.random() * (W - 2 * r),
-      y: -r,
-      r: r,
-      bad: Math.random() < 0.22 + 0.2 * level,
-      vy: H * (0.32 + 0.4 * level) * (0.85 + Math.random() * 0.3),
-      rot: Math.random() * 6,
-      spin: (Math.random() - 0.5) * 4
-    });
-  }
-
-  function burst(x, y, color) {
-    for (var n = 0; n < 8; n++) {
-      var a = Math.random() * 6.283, v = 60 + Math.random() * 120;
-      sparks.push({ x: x, y: y, vx: Math.cos(a) * v, vy: Math.sin(a) * v - 60, life: 0.5, color: color });
-    }
-  }
-
-  function update(dt) {
-    time += dt;
-    var level = Math.min(time / 60, 1); // gets harder for the first minute
-    var bw = bowlW(), by = bowlY();
-
-    var dir = (keys.right ? 1 : 0) - (keys.left ? 1 : 0);
-    if (dir) { px += dir * Math.max(420, W * 0.9) * dt; target = null; }
-    else if (target !== null) px += (target - px) * Math.min(1, dt * 18);
-    px = clamp(px, bw / 2, W - bw / 2);
-
-    spawnIn -= dt;
-    if (spawnIn <= 0) {
-      spawn(level);
-      spawnIn = 0.85 - 0.5 * level + Math.random() * 0.2;
-    }
-
-    for (var n = items.length - 1; n >= 0; n--) {
-      var it = items[n];
-      it.y += it.vy * dt;
-      it.rot += it.spin * dt;
-      var inBowl = it.y + it.r >= by && it.y - it.r <= by + bw * 0.28 &&
-                   Math.abs(it.x - px) <= bw / 2 + it.r * 0.3;
-      if (inBowl) {
-        if (it.bad) { lives--; flash = 0.25; burst(it.x, by, "#ff6b6b"); }
-        else { score++; burst(it.x, by, "#f2d147"); }
-        items.splice(n, 1);
-        hud();
-      } else if (it.y - it.r > H) {
-        items.splice(n, 1);
-      }
-    }
-
-    for (var k = sparks.length - 1; k >= 0; k--) {
-      var s = sparks[k];
-      s.life -= dt;
-      if (s.life <= 0) { sparks.splice(k, 1); continue; }
-      s.vy += 400 * dt;
-      s.x += s.vx * dt;
-      s.y += s.vy * dt;
-    }
-
-    if (flash > 0) flash -= dt;
-    if (lives <= 0) gameOver();
-  }
-
-  /* ----- Drawing ----- */
-
-  function starPath(x, y, r, rot) {
-    ctx.beginPath();
-    for (var n = 0; n < 10; n++) {
-      var a = rot + n * Math.PI / 5, rr = n % 2 ? r * 0.45 : r;
-      ctx.lineTo(x + Math.sin(a) * rr, y - Math.cos(a) * rr);
-    }
-    ctx.closePath();
-  }
-
-  function draw() {
-    ctx.clearRect(0, 0, W, H);
-
-    for (var n = 0; n < sky.length; n++) {
-      ctx.fillStyle = sky[n][2] ? "rgba(242,209,71,.7)" : "rgba(255,255,255,.45)";
-      ctx.fillRect(sky[n][0] * W, sky[n][1] * H, 1.5, 1.5);
-    }
-
-    for (var m = 0; m < items.length; m++) {
-      var it = items[m];
-      if (it.bad) {
-        var tail = ctx.createLinearGradient(0, it.y - it.r * 3.5, 0, it.y);
-        tail.addColorStop(0, "rgba(255,107,107,0)");
-        tail.addColorStop(1, "rgba(255,107,107,.55)");
-        ctx.fillStyle = tail;
-        ctx.fillRect(it.x - it.r * 0.6, it.y - it.r * 3.5, it.r * 1.2, it.r * 3.5);
-        ctx.fillStyle = "#ff6b6b";
-        ctx.beginPath();
-        ctx.arc(it.x, it.y, it.r * 0.85, 0, 6.283);
-        ctx.fill();
-        ctx.fillStyle = "#b13a48";
-        ctx.beginPath();
-        ctx.arc(it.x - it.r * 0.25, it.y - it.r * 0.2, it.r * 0.22, 0, 6.283);
-        ctx.arc(it.x + it.r * 0.3, it.y + it.r * 0.25, it.r * 0.16, 0, 6.283);
-        ctx.fill();
-      } else {
-        ctx.fillStyle = "#f2d147";
-        starPath(it.x, it.y, it.r, it.rot);
-        ctx.fill();
-      }
-    }
-
-    // The upturned umbrella
-    var bw = bowlW(), by = bowlY(), depth = bw * 0.36;
-    ctx.lineCap = "round";
-    ctx.strokeStyle = "#f4f5fb";
-    ctx.lineWidth = 3;
-    ctx.beginPath();
-    ctx.moveTo(px, by + depth);
-    ctx.lineTo(px, by + depth + bw * 0.22);
-    ctx.arc(px + bw * 0.07, by + depth + bw * 0.22, bw * 0.07, Math.PI, 0, true);
-    ctx.stroke();
-    ctx.fillStyle = "#5b8ff9";
-    ctx.beginPath();
-    ctx.ellipse(px, by, bw / 2, depth, 0, 0, Math.PI);
-    ctx.closePath();
-    ctx.fill();
-    ctx.strokeStyle = "rgba(20,20,27,.35)";
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(px - bw / 6, by); ctx.quadraticCurveTo(px - bw / 8, by + depth * 0.7, px, by + depth);
-    ctx.moveTo(px + bw / 6, by); ctx.quadraticCurveTo(px + bw / 8, by + depth * 0.7, px, by + depth);
-    ctx.stroke();
-    ctx.strokeStyle = "#f2d147";
-    ctx.lineWidth = 4;
-    ctx.beginPath();
-    ctx.moveTo(px - bw / 2, by);
-    ctx.lineTo(px + bw / 2, by);
-    ctx.stroke();
-
-    for (var k = 0; k < sparks.length; k++) {
-      var s = sparks[k];
-      ctx.globalAlpha = Math.max(0, s.life * 2);
-      ctx.fillStyle = s.color;
-      ctx.fillRect(s.x - 2, s.y - 2, 4, 4);
-    }
-    ctx.globalAlpha = 1;
-
-    if (flash > 0) {
-      ctx.fillStyle = "rgba(255,107,107," + (flash * 1.2).toFixed(2) + ")";
-      ctx.fillRect(0, 0, W, H);
-    }
-  }
-
-  function tick(now) {
-    if (!running) return;
-    var dt = Math.min((now - last) / 1000, 0.05);
-    last = now;
-    update(dt);
-    draw();
-    if (running) raf = requestAnimationFrame(tick);
-  }
-
-  /* ----- Opening, closing, controls ----- */
-
-  function open() {
-    box.hidden = false;
-    document.body.style.overflow = "hidden";
-    titleEl.textContent = "Star Catcher";
-    msgEl.textContent = "Catch the gold stars in your umbrella. Dodge the red meteors: three hits and it's over!";
-    startBtn.textContent = "Play";
-    panel.hidden = false;
-    score = 0; lives = 3; items = []; sparks = []; flash = 0;
-    hud();
-    resize();
-    startBtn.focus();
-  }
-
-  function close() {
-    running = false;
-    cancelAnimationFrame(raf);
-    box.hidden = true;
-    document.body.style.overflow = "";
-    playBtn.focus();
-  }
-
-  playBtn.addEventListener("click", open);
-  startBtn.addEventListener("click", start);
-  document.getElementById("gameClose").addEventListener("click", close);
-
-  function point(e) {
-    target = e.clientX - box.getBoundingClientRect().left;
-  }
-  cv.addEventListener("pointerdown", point);
-  cv.addEventListener("pointermove", point);
-
-  function key(e, down) {
-    if (box.hidden) return;
-    var k = e.key;
-    if (k === "Escape" && down) { close(); return; }
-    if (k === "ArrowLeft" || k === "a" || k === "A") keys.left = down;
-    else if (k === "ArrowRight" || k === "d" || k === "D") keys.right = down;
-    else return;
-    e.preventDefault();
-  }
-  window.addEventListener("keydown", function (e) { key(e, true); });
-  window.addEventListener("keyup", function (e) { key(e, false); });
-  window.addEventListener("blur", function () { keys = {}; });
-  window.addEventListener("resize", function () { if (!box.hidden) resize(); });
 })();
 </script>
 </body>
