@@ -6,20 +6,20 @@
 <title>UsForge News Editor</title>
 <style>
   :root {
-    --bg: #14112e;
-    --panel: #1d1842;
-    --card: #221e4d;
-    --card-line: #35307a;
-    --ink: #f6f4ff;
-    --ink-soft: #c9c5ee;
-    --ink-dim: #938ec4;
-    --fire: #ff7a1a;
-    --fire-hot: #ffc93c;
+    --bg: #15151c;
+    --panel: #1c1c27;
+    --card: #232330;
+    --card-line: #37374c;
+    --ink: #f4f5fb;
+    --ink-soft: #c5c8dc;
+    --ink-dim: #8c90aa;
+    --blue: #5b8ff9;
+    --gold: #f2d147;
     --game: #3ddc84;
-    --update: #4cc3ff;
+    --update: #5b8ff9;
     --event: #ff5fa2;
-    --site: #ffc93c;
-    --other: #b9a7ff;
+    --site: #b79cff;
+    --other: #b3b8d6;
     --danger: #ff6b6b;
   }
 
@@ -38,7 +38,8 @@
   .wrap { max-width: 1100px; margin: 0 auto; padding: 20px clamp(12px, 3vw, 24px) 60px; }
 
   h1 { margin: 0; font-size: clamp(22px, 5vw, 30px); font-weight: 900; }
-  h1 span { color: var(--fire); }
+  h1 { color: var(--blue); }
+  h1 span { color: var(--gold); }
   .lead { margin: 4px 0 20px; color: var(--ink-soft); }
 
   .cols { display: grid; gap: 18px; grid-template-columns: minmax(0, 1fr); }
@@ -63,8 +64,8 @@
     width: 28px;
     height: 28px;
     border-radius: 50%;
-    background: var(--fire);
-    color: #fff;
+    background: var(--gold);
+    color: #14141b;
     font-size: 15px;
     font-weight: 900;
   }
@@ -73,8 +74,8 @@
   .hint code, ol code {
     padding: 1px 5px;
     border-radius: 5px;
-    background: #0e0b24;
-    color: var(--fire-hot);
+    background: #101016;
+    color: var(--gold);
     font-size: 13px;
   }
 
@@ -86,7 +87,7 @@
     padding: 9px 11px;
     border: 2px solid var(--card-line);
     border-radius: 10px;
-    background: #120f2b;
+    background: #121218;
     color: var(--ink);
     font: inherit;
     color-scheme: dark;
@@ -94,12 +95,12 @@
 
   textarea { min-height: 150px; resize: vertical; }
 
-  input:focus, select:focus, textarea:focus { outline: none; border-color: var(--fire); }
+  input:focus, select:focus, textarea:focus { outline: none; border-color: var(--blue); }
 
   .row { display: grid; gap: 12px; grid-template-columns: 1fr 1fr; }
 
   .check { display: flex; align-items: center; gap: 8px; margin-top: 14px; font-weight: 700; cursor: pointer; }
-  .check input { width: 18px; height: 18px; accent-color: var(--fire); }
+  .check input { width: 18px; height: 18px; accent-color: var(--blue); }
 
   .btns { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
 
@@ -118,7 +119,7 @@
 
   button:hover, .filebtn:hover { border-color: var(--ink-dim); }
   button:disabled { opacity: .45; cursor: not-allowed; }
-  button.primary { background: var(--fire); border-color: var(--fire); color: #fff; }
+  button.primary { background: var(--blue); border-color: var(--blue); color: #14141b; }
   button.primary:hover { filter: brightness(1.1); }
   button.big { padding: 12px 20px; font-size: 16px; }
   button.danger { color: var(--danger); }
@@ -153,7 +154,7 @@
     background: var(--card);
   }
 
-  .list li.editing { border-color: var(--fire); border-left-color: var(--c); }
+  .list li.editing { border-color: var(--blue); border-left-color: var(--c); }
   .list .t { flex: 1 1 200px; min-width: 0; font-weight: 700; overflow-wrap: anywhere; }
   .list .d { color: var(--ink-dim); font-size: 13px; }
   .list .b { display: flex; gap: 6px; }
@@ -182,9 +183,9 @@
   }
 
   .card.pinned {
-    border-color: var(--fire-hot);
+    border-color: var(--gold);
     border-top-color: var(--c);
-    background: linear-gradient(180deg, rgba(255, 201, 60, .1), transparent 90px), var(--card);
+    background: linear-gradient(180deg, rgba(242, 209, 71, .08), transparent 90px), var(--card);
   }
 
   .meta {
@@ -198,9 +199,9 @@
     text-transform: uppercase;
   }
 
-  .chip { padding: 2px 10px; border-radius: 99px; background: var(--c); color: #15112c; }
-  .pin { color: var(--fire-hot); }
-  .badge-new { padding: 2px 9px; border-radius: 6px; background: var(--fire); color: #fff; transform: rotate(-3deg); }
+  .chip { padding: 2px 10px; border-radius: 99px; background: var(--c); color: #14141b; }
+  .pin { color: var(--gold); }
+  .badge-new { padding: 2px 9px; border-radius: 6px; background: var(--gold); color: #14141b; transform: rotate(-3deg); }
   .date { margin-left: auto; color: var(--ink-dim); font-weight: 700; letter-spacing: 0; text-transform: none; font-size: 13px; }
   .card h3 { margin: 10px 0 6px; font-size: 20px; font-weight: 800; line-height: 1.25; overflow-wrap: anywhere; }
   .text { color: var(--ink-soft); white-space: pre-line; overflow-wrap: anywhere; }
@@ -210,7 +211,7 @@
     padding: 8px 16px;
     border-radius: 10px;
     background: var(--c);
-    color: #15112c;
+    color: #14141b;
     font-size: 14px;
     font-weight: 800;
     text-decoration: none;
