@@ -119,11 +119,10 @@ Thanks to everyone who sent in bug reports. Keep them coming!`
   body {
     background:
       radial-gradient(circle at 15% -10%, rgba(91, 143, 249, .22), transparent 45%),
-      radial-gradient(circle at 95% 0%, rgba(242, 209, 71, .12), transparent 40%),
-      radial-gradient(rgba(255, 255, 255, .045) 1.5px, transparent 1.5px) 0 0 / 22px 22px,
+      radial-gradient(circle at 95% 0%, rgba(242, 209, 71, .2), transparent 42%),
       linear-gradient(180deg, var(--bg2), var(--bg) 480px);
     background-color: var(--bg);
-    background-repeat: no-repeat, no-repeat, repeat, no-repeat;
+    background-repeat: no-repeat;
     color: var(--ink);
     font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     font-size: 16px;
@@ -134,7 +133,24 @@ Thanks to everyone who sent in bug reports. Keep them coming!`
     -webkit-tap-highlight-color: transparent;
   }
 
+  .stars { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+
+  .stars i {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1px;
+    height: 1px;
+    border-radius: 50%;
+    background: transparent;
+  }
+
+  .stars .twinkle { animation: twinkle 4s ease-in-out infinite; }
+  .stars .twinkle.late { animation-delay: -2s; }
+
   .wrap {
+    position: relative;
+    z-index: 1;
     max-width: 760px;
     margin: 0 auto;
     padding: 0 clamp(12px, 4vw, 24px) 40px;
@@ -151,34 +167,44 @@ Thanks to everyone who sent in bug reports. Keep them coming!`
 
   .hero h1 {
     position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: center;
+    gap: clamp(8px, 2vw, 16px) clamp(10px, 2.6vw, 20px);
     margin: 0;
-    font-family: "Avenir Next", Avenir, Montserrat, Poppins, "Century Gothic", Futura, "Segoe UI", system-ui, sans-serif;
-    font-weight: 900;
-    font-size: clamp(26px, 9vw, 58px);
-    line-height: 1.1;
-    letter-spacing: -.01em;
-    text-transform: uppercase;
-    color: var(--blue);
-    text-shadow: 0 .06em 0 rgba(0, 0, 0, .45);
+    font-size: clamp(34px, 11vw, 70px); /* the logo is sized in em */
+    line-height: 1;
     animation: drop .5s cubic-bezier(.2, 1.4, .4, 1) both;
   }
 
-  /* The big U and F of the UsForge logo */
-  .hero h1 .cap { font-size: 1.32em; line-height: 0; }
-
-  .hero h1 .news {
-    display: inline-block;
-    padding: .08em .3em .1em;
-    margin-left: .08em;
-    font-size: .62em;
-    vertical-align: .22em;
-    color: #14141b;
-    background: var(--gold);
-    border-radius: .28em;
-    text-shadow: none;
-    transform: rotate(-4deg);
-    box-shadow: 0 .14em 0 rgba(0, 0, 0, .4);
+  .logo {
+    display: block;
+    height: 1em;
+    width: auto;
+    max-width: 100%;
+    color: var(--blue);
+    filter: drop-shadow(0 .06em 0 rgba(0, 0, 0, .5));
   }
+
+  .logo g, .news-mark g, .studio svg g {
+    fill: none;
+    stroke: currentColor;
+    stroke-miterlimit: 10;
+  }
+
+  .news {
+    display: block;
+    margin-bottom: .04em;
+    padding: .13em .2em;
+    border-radius: .16em;
+    background: var(--gold);
+    color: #14141b;
+    transform: rotate(-4deg);
+    box-shadow: 0 .08em 0 rgba(0, 0, 0, .45);
+  }
+
+  .news-mark { display: block; height: .38em; width: auto; }
 
   .hero p {
     position: relative;
@@ -227,6 +253,7 @@ Thanks to everyone who sent in bug reports. Keep them coming!`
     overflow-x: auto;
     scrollbar-width: none;
     background: rgba(21, 21, 28, .9);
+    border-bottom: 2px solid rgba(242, 209, 71, .35);
     -webkit-backdrop-filter: blur(8px);
     backdrop-filter: blur(8px);
   }
@@ -273,6 +300,8 @@ Thanks to everyone who sent in bug reports. Keep them coming!`
 
   .filters button[aria-pressed="true"]::before { background: #14141b; }
 
+  .filters button:first-child { --c: var(--gold); }
+
   button:focus-visible, a:focus-visible {
     outline: 3px solid #fff;
     outline-offset: 2px;
@@ -302,13 +331,13 @@ Thanks to everyone who sent in bug reports. Keep them coming!`
   }
 
   @media (hover: hover) {
-    .card:hover { transform: translateY(-3px); box-shadow: 0 9px 0 rgba(0, 0, 0, .35); }
+    .card:hover { transform: translateY(-3px); border-color: var(--gold); border-top-color: var(--c); box-shadow: 0 9px 0 rgba(0, 0, 0, .35); }
   }
 
   .card.pinned {
     border-color: var(--gold);
     border-top-color: var(--c);
-    background: linear-gradient(180deg, rgba(242, 209, 71, .08), transparent 90px), var(--card);
+    background: linear-gradient(180deg, rgba(242, 209, 71, .14), transparent 110px), var(--card);
   }
 
   .meta {
@@ -410,26 +439,23 @@ Thanks to everyone who sent in bug reports. Keep them coming!`
   .link:active { transform: translateY(3px); box-shadow: 0 1px 0 rgba(0, 0, 0, .4); }
 
   .studio {
-    margin-top: 28px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    margin-top: 34px;
     color: var(--ink-dim);
-    font-size: 13px;
-    font-weight: 600;
-    text-align: center;
-  }
-
-  .studio b {
-    margin-left: 4px;
-    color: var(--blue);
-    font-family: Impact, Haettenschweiler, "Arial Narrow Bold", "Arial Narrow", sans-serif;
-    font-size: 20px;
-    font-weight: 400;
-    letter-spacing: .06em;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .12em;
     text-transform: uppercase;
-    vertical-align: -2px;
-    text-shadow: 2px 2px 0 rgba(91, 143, 249, .35);
   }
 
-  .studio b span { color: var(--gold); text-shadow: 2px 2px 0 rgba(242, 209, 71, .35); }
+  .studio svg { display: block; width: 190px; max-width: 60%; height: auto; }
+  .studio .lazy { color: var(--gold); }
+  .studio .studios { color: var(--blue); }
+  .studio .shade { opacity: .42; }
+  .studio .brolly { stroke: #fff; stroke-width: 1.6; stroke-linejoin: round; stroke-linecap: round; }
 
   .empty, .problem {
     padding: 28px 18px;
@@ -455,6 +481,11 @@ Thanks to everyone who sent in bug reports. Keep them coming!`
     to   { opacity: 1; transform: none; }
   }
 
+  @keyframes twinkle {
+    0%, 100% { opacity: 1; }
+    50%      { opacity: .25; }
+  }
+
   @keyframes pulse {
     0%, 100% { transform: rotate(-3deg) scale(1); }
     50%      { transform: rotate(-3deg) scale(1.1); }
@@ -469,15 +500,46 @@ Thanks to everyone who sent in bug reports. Keep them coming!`
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation: none !important; transition: none !important; }
     .embers { display: none; }
+    .stars .twinkle { opacity: 1; }
   }
 </style>
 </head>
 <body>
 
+<div class="stars" id="stars" aria-hidden="true"></div>
+
 <div class="wrap">
   <header class="hero">
     <div class="embers" id="embers" aria-hidden="true"></div>
-    <h1 aria-label="UsForge News"><span class="cap">U</span>s<span class="cap">F</span>orge <span class="news">News</span></h1>
+    <h1 aria-label="UsForge News">
+      <!-- UsForge logo, drawn as shapes so it looks the same on every device -->
+      <svg class="logo" viewBox="0 0 641 130" aria-hidden="true">
+        <defs><clipPath id="capBox"><rect x="-2" y="0" width="110" height="100"/></clipPath></defs>
+        <g stroke-width="19">
+          <path transform="scale(1.3)" d="M9.5,0V62a28.5,28.5 0 0 0 57,0V0"/>
+          <path transform="translate(108.8,30)" d="M53.65,16.73A25,20.25 0 1 0 34.5,50A25,20.25 0 1 1 15.35,83.27"/>
+          <path transform="translate(187.8,0) scale(1.3)" d="M62,9.5H9.5V100M9.5,54H47"/>
+          <circle transform="translate(276.4,30)" cx="50" cy="50" r="40.5"/>
+          <path transform="translate(386.4,30)" clip-path="url(#capBox)" d="M9.5,100V9.5H44A24.25,24.25 0 0 1 44,58H9.5M45,56L64,106"/>
+          <path transform="translate(470.4,30)" d="M78.64,21.36A40.5,40.5 0 1 0 90.5,50M100,55H54"/>
+          <path transform="translate(580.4,30)" d="M60,9.5H9.5V90.5H60M9.5,50H52"/>
+        </g>
+      </svg>
+      <span class="news">
+        <svg class="news-mark" viewBox="0 0 339 100" aria-hidden="true">
+          <defs>
+            <clipPath id="newsBox"><rect x="0" y="0" width="100" height="100"/></clipPath>
+            <clipPath id="nBox"><rect x="0" y="0" width="80" height="100"/></clipPath>
+          </defs>
+          <g stroke-width="19">
+            <path clip-path="url(#nBox)" d="M9.5,0V100M70.5,0V100M6.5,-5L73.5,105"/>
+            <path transform="translate(90,0)" d="M60,9.5H9.5V90.5H60M9.5,50H52"/>
+            <path transform="translate(160,0)" clip-path="url(#newsBox)" d="M6,-10L28,96L50,22L72,96L94,-10"/>
+            <path transform="translate(270,0)" d="M53.65,16.73A25,20.25 0 1 0 34.5,50A25,20.25 0 1 1 15.35,83.27"/>
+          </g>
+        </svg>
+      </span>
+    </h1>
     <p>Fresh from the forge: new games, updates and events <span class="new-count" id="newCount" hidden></span></p>
   </header>
 
@@ -485,7 +547,43 @@ Thanks to everyone who sent in bug reports. Keep them coming!`
 
   <main class="feed" id="feed" aria-live="polite"></main>
 
-  <footer class="studio">Made by <b><span>Lazy</span> Studios</b></footer>
+  <footer class="studio">
+    <span>Made by</span>
+    <svg viewBox="0 -18 366 286" role="img" aria-label="Lazy Studios">
+      <defs>
+        <clipPath id="tallBox"><rect x="0" y="0" width="50" height="100"/></clipPath>
+        <g id="lazyWord" stroke-width="15" stroke-linejoin="round">
+          <path d="M9,0V91H46"/>
+          <path transform="translate(52,0)" clip-path="url(#tallBox)" stroke-linejoin="miter" d="M5,104L25,0L45,104M14,78H36"/>
+          <path transform="translate(108,0)" clip-path="url(#tallBox)" stroke-linejoin="miter" d="M4,9H42L8,91H46"/>
+          <path transform="translate(164,0)" clip-path="url(#tallBox)" stroke-linejoin="miter" d="M4,-6L25,50L46,-6M25,48V100"/>
+        </g>
+        <g id="studiosWord" stroke-width="15" stroke-linejoin="round">
+          <path d="M41,31V20a11,11 0 0 0 -11,-11H20a11,11 0 0 0 -11,11V35L41,65V80a11,11 0 0 1 -11,11H20a11,11 0 0 1 -11,-11V69"/>
+          <path transform="translate(56,0)" d="M2,9H48M25,9V100"/>
+          <path transform="translate(112,0)" d="M9,0V75a16,16 0 0 0 32,0V0"/>
+          <path transform="translate(168,0)" d="M9,9V91H24A17,17 0 0 0 41,74V26A17,17 0 0 0 24,9Z"/>
+          <path transform="translate(224,0)" d="M9,0V100"/>
+          <path transform="translate(248,0)" d="M25,9a16,16 0 0 1 16,16V75a16,16 0 0 1 -32,0V25a16,16 0 0 1 16,-16Z"/>
+          <path transform="translate(304,0)" d="M41,31V20a11,11 0 0 0 -11,-11H20a11,11 0 0 0 -11,11V35L41,65V80a11,11 0 0 1 -11,11H20a11,11 0 0 1 -11,-11V69"/>
+        </g>
+      </defs>
+      <g class="lazy" transform="translate(58,34) scale(1.15)">
+        <use href="#lazyWord" class="shade" x="5" y="6"/>
+        <use href="#lazyWord"/>
+      </g>
+      <g class="studios" transform="translate(4,158)">
+        <use href="#studiosWord" class="shade" x="5" y="6"/>
+        <use href="#studiosWord"/>
+      </g>
+      <!-- the little beach umbrella on the Y -->
+      <g class="brolly" transform="translate(297,36) rotate(22) scale(1.25)" fill="none">
+        <path d="M0,0V-20"/>
+        <path d="M-21,-20A21,15 0 0 1 21,-20Q14,-24 7,-20Q0,-24 -7,-20Q-14,-24 -21,-20Z"/>
+        <path d="M0,-35Q-8,-29 -7,-20M0,-35Q8,-29 7,-20"/>
+      </g>
+    </svg>
+  </footer>
 </div>
 
 <script>
@@ -710,6 +808,24 @@ Thanks to everyone who sent in bug reports. Keep them coming!`
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(checkClamps, 120);
   });
+
+  /* ---------- Starry background ---------- */
+
+  // Each layer is one tiny dot copied many times with box-shadow: cheap to draw.
+  function starLayer(count, size, color, cls) {
+    var dots = [];
+    for (var n = 0; n < count; n++) {
+      dots.push((Math.random() * 100).toFixed(2) + "vw " + (Math.random() * 100).toFixed(2) + "vh 0 " + size + "px " + color);
+    }
+    var layer = document.createElement("i");
+    if (cls) layer.className = cls;
+    layer.style.boxShadow = dots.join(",");
+    document.getElementById("stars").appendChild(layer);
+  }
+
+  starLayer(70, 0, "rgba(255,255,255,.55)", "");
+  starLayer(22, 0.5, "rgba(255,255,255,.9)", "twinkle");
+  starLayer(16, 0.6, "rgba(242,209,71,.95)", "twinkle late");
 
   /* ---------- Header sparks ---------- */
 
