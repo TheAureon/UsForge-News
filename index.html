@@ -21,7 +21,7 @@
 
      title:  the headline.
      date:   the day, written as "YEAR-MONTH-DAY", e.g. "2026-11-12".
-     tag:    exactly one of:  "New Game"   "Update"   "Event"   "Site News"
+     tag:    exactly one of:  "Event"   "Site News"
      pinned: true   keeps the post stuck at the top.
              Delete the whole line (or write false) for a normal post.
      link:   a web address for the button. Delete the whole line for no link.
@@ -46,46 +46,26 @@ var ANNOUNCEMENTS = [
     date: "2026-11-12",
     tag: "Site News",
     pinned: true,
-    text: `This is the place to find out what's happening on UsForge: new games, updates to the ones you already play, and events.
+    text: `This is the place to find out what's happening on UsForge: site news and events.
 
 Posts you haven't seen yet get a NEW badge, so you can tell at a glance what changed since your last visit. Use the buttons at the top to show only one kind of news.`
-  },
-
-  {
-    title: "Example: a new game has landed",
-    date: "2026-11-10",
-    tag: "New Game",
-    link: "https://example.com",
-    text: `This is an example post. Replace it with your own announcement.
-
-Say what the game is, how you play it, and why it's worth a try. The link above turns into a "Play now" button.`
-  },
-
-  {
-    title: "Example: big update with new levels",
-    date: "2026-11-05",
-    tag: "Update",
-    text: `This is an example of a longer post, so you can see how "Read more" works.
-
-What's new:
-- Ten new levels in the lava world
-- A boss fight at the end of each world
-- Saves now work on phones
-- Jumping feels snappier
-
-What we fixed:
-- The game no longer freezes when you pause during a cutscene
-- The sound stays off when you turn it off
-- Scores above 99,999 now show correctly
-
-Thanks to everyone who sent in bug reports. Keep them coming!`
   },
 
   {
     title: "Example: weekend high score challenge",
     date: "2026-10-30",
     tag: "Event",
-    text: `This is an example event post. Tell players when it starts, when it ends, and what they have to do.`
+    link: "https://example.com",
+    text: `This is an example event post. Replace it with your own announcement.
+
+Tell players when it starts, when it ends, and what they have to do. The link above turns into a button under the post.
+
+How it works:
+- Play any game on the site during the weekend
+- Beat your own best score
+- Share it with your friends
+
+Long posts like this one fold up, and "Read more" opens them.`
   },
 
 ];
@@ -105,10 +85,8 @@ Thanks to everyone who sent in bug reports. Keep them coming!`
     --cyan: #5cc6f4;
     --deep: #0b2bc0;
     --gold: #f2d147;
-    --game: #3ddc84;
-    --update: #5b8ff9;
     --event: #ff5fa2;
-    --site: #b79cff;
+    --site: #5b8ff9;
     --other: #b3b8d6;
   }
 
@@ -322,8 +300,6 @@ Thanks to everyone who sent in bug reports. Keep them coming!`
 
   .feed { display: grid; gap: 16px; margin-top: 10px; }
 
-  .t-game   { --c: var(--game); }
-  .t-update { --c: var(--update); }
   .t-event  { --c: var(--event); }
   .t-site   { --c: var(--site); }
   .t-other  { --c: var(--other); }
@@ -603,7 +579,7 @@ Thanks to everyone who sent in bug reports. Keep them coming!`
         </svg>
       </span>
     </h1>
-    <p>Fresh from the forge: new games, updates and events <span class="new-count" id="newCount" hidden></span></p>
+    <p>Fresh from the forge: site news and events <span class="new-count" id="newCount" hidden></span></p>
   </header>
 
   <nav class="filters" id="filters" aria-label="Filter news by type"></nav>
@@ -670,8 +646,8 @@ Thanks to everyone who sent in bug reports. Keep them coming!`
     return;
   }
 
-  var TAGS = ["New Game", "Update", "Event", "Site News"];
-  var TAG_CLASS = { "New Game": "t-game", "Update": "t-update", "Event": "t-event", "Site News": "t-site" };
+  var TAGS = ["Event", "Site News"];
+  var TAG_CLASS = { "Event": "t-event", "Site News": "t-site" };
   var MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   var STORE_KEY = "usforge-news-seen-v1";
 
@@ -795,7 +771,7 @@ Thanks to everyone who sent in bug reports. Keep them coming!`
 
     var actions = el("div", "actions");
     if (p.link) {
-      var a = el("a", "link", p.tag === "New Game" ? "Play now ↗" : "Open link ↗");
+      var a = el("a", "link", "Open link ↗");
       a.href = p.link;
       a.target = "_blank";
       a.rel = "noopener noreferrer";

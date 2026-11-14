@@ -15,10 +15,8 @@
     --ink-dim: #8c90aa;
     --blue: #5b8ff9;
     --gold: #f2d147;
-    --game: #3ddc84;
-    --update: #5b8ff9;
     --event: #ff5fa2;
-    --site: #b79cff;
+    --site: #5b8ff9;
     --other: #b3b8d6;
     --danger: #ff6b6b;
   }
@@ -131,7 +129,7 @@
   details { margin-top: 12px; }
   summary { color: var(--ink-soft); font-size: 14px; font-weight: 700; cursor: pointer; }
 
-  .msg { min-height: 1.4em; margin: 10px 0 0; font-size: 14px; font-weight: 700; color: var(--game); }
+  .msg { min-height: 1.4em; margin: 10px 0 0; font-size: 14px; font-weight: 700; color: #3ddc84; }
   .msg.bad { color: var(--danger); }
 
   .preview-box {
@@ -167,8 +165,6 @@
 
   /* ----- Card look, same as index.html ----- */
 
-  .t-game   { --c: var(--game); }
-  .t-update { --c: var(--update); }
   .t-event  { --c: var(--event); }
   .t-site   { --c: var(--site); }
   .t-other  { --c: var(--other); }
@@ -254,8 +250,6 @@
             <div>
               <label for="fTag">Tag</label>
               <select id="fTag">
-                <option>New Game</option>
-                <option>Update</option>
                 <option>Event</option>
                 <option>Site News</option>
               </select>
@@ -326,7 +320,7 @@
   var END_MARK = "// <<< ANNOUNCEMENTS END";
   var KEEP = " (do not change or delete this line)";
   var DRAFT_KEY = "usforge-news-editor-draft-v1";
-  var TAG_CLASS = { "New Game": "t-game", "Update": "t-update", "Event": "t-event", "Site News": "t-site" };
+  var TAG_CLASS = { "Event": "t-event", "Site News": "t-site" };
   var MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
   function $(id) { return document.getElementById(id); }
@@ -405,7 +399,7 @@
 
   function resetForm() {
     editing = -1;
-    fillForm({ title: "", date: today(), tag: "New Game", text: "", link: "", pinned: false });
+    fillForm({ title: "", date: today(), tag: "Site News", text: "", link: "", pinned: false });
     $("formTitle").textContent = "Write a new post";
     $("saveBtn").textContent = "Add post";
     $("cancelBtn").hidden = true;
@@ -509,7 +503,7 @@
     card.appendChild(el("h3", "", p.title || "Your title"));
     card.appendChild(el("div", "text", p.text || "Your text will show up here."));
     if (p.link) {
-      var a = el("a", "link", p.tag === "New Game" ? "Play now \u2197" : "Open link \u2197");
+      var a = el("a", "link", "Open link \u2197");
       a.href = /^https?:\/\//i.test(p.link) ? p.link : "#";
       a.target = "_blank";
       a.rel = "noopener noreferrer";
