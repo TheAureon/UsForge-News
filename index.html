@@ -457,6 +457,7 @@ Long posts like this one fold up, and "Read more" opens them.`
     text-transform: uppercase;
   }
 
+  .studio span b { color: var(--gold); }
   .studio svg { display: block; width: 190px; max-width: 60%; height: auto; }
   .studio .lazy { color: var(--gold); }
   .studio .studios { color: var(--blue); }
@@ -619,6 +620,7 @@ Long posts like this one fold up, and "Read more" opens them.`
     animation: fadeUp .5s ease-out 1.9s both;
   }
 
+  .title-by i { color: var(--ink); font-style: normal; }
   .title-by b { color: var(--gold); }
   .title-by b + b { color: var(--blue); }
 
@@ -745,7 +747,7 @@ Long posts like this one fold up, and "Read more" opens them.`
   <main class="feed" id="feed" aria-live="polite"></main>
 
   <footer class="studio">
-    <span>Made by</span>
+    <span>Made by <b>Henrique</b></span>
     <svg viewBox="0 -18 366 286" role="img" aria-label="Lazy Studios">
       <defs>
         <clipPath id="tallBox"><rect x="0" y="0" width="50" height="100"/></clipPath>
@@ -797,7 +799,7 @@ Long posts like this one fold up, and "Read more" opens them.`
     <div class="title-enter"><button type="button" class="title-btn" id="titleBtn">Enter</button></div>
     <p class="title-new" id="titleNew" hidden></p>
   </div>
-  <div class="title-by">Made by <b>Lazy</b> <b>Studios</b></div>
+  <div class="title-by">Made by <i>Henrique</i> &middot; <b>Lazy</b> <b>Studios</b></div>
 </div>
 
 <script>
