@@ -21,7 +21,8 @@
 
      title:  the headline.
      date:   the day, written as "YEAR-MONTH-DAY", e.g. "2026-11-12".
-     tag:    exactly one of:  "Event"   "Site News"
+     tag:    exactly one of:  "Event"   "Site News"   "Promotion"
+             ("Promotion" posts are ads: they only show in the Promotions tab.)
      pinned: true   keeps the post stuck at the top.
              Delete the whole line (or write false) for a normal post.
      link:   a web address for the button. Delete the whole line for no link.
@@ -66,6 +67,15 @@ How it works:
 - Share it with your friends
 
 Long posts like this one fold up, and "Read more" opens them.`
+  },
+
+  {
+    title: "Example: your ad could be here",
+    date: "2026-11-14",
+    tag: "Promotion",
+    text: `This is an example promotion. Replace it with a real ad, or delete it.
+
+Promotions only show up in the Promotions tab.`
   },
 
 ];
@@ -299,7 +309,7 @@ Long posts like this one fold up, and "Read more" opens them.`
 
   .promo {
     position: relative;
-    margin-top: 14px;
+    margin: 14px 0 16px;
     padding: 14px clamp(16px, 4vw, 24px) 14px;
     isolation: isolate;
     background: var(--gold);
@@ -348,12 +358,27 @@ Long posts like this one fold up, and "Read more" opens them.`
     font-weight: 600;
   }
 
+  .promo-steps {
+    display: inline-block;
+    max-width: 460px;
+    margin: 12px 0 0;
+    padding: 12px 0 0 22px;
+    border-top: 1px solid rgba(242, 209, 71, .35);
+    color: var(--ink-soft);
+    font-size: 14px;
+    text-align: left;
+  }
+
+  .promo-steps li { margin: 3px 0; }
+  .promo-steps li::marker { color: var(--gold); font-weight: 800; }
+
   /* ---------- Cards ---------- */
 
   .feed { display: grid; gap: 16px; margin-top: 10px; }
 
   .t-event  { --c: var(--event); }
   .t-site   { --c: var(--site); }
+  .t-promo  { --c: var(--gold); }
   .t-other  { --c: var(--other); }
 
   /* Cards have two cut corners. The outer shape is the border colour and
@@ -796,11 +821,16 @@ Long posts like this one fold up, and "Read more" opens them.`
 
   <nav class="filters" id="filters" aria-label="Filter news by type"></nav>
 
-  <!-- Promotions: change the e-mail address or the price here -->
-  <aside class="promo" aria-label="Promotions">
-    <span class="promo-label">Promotions</span>
+  <!-- Promotions tab: change the e-mail address, price or steps here -->
+  <aside class="promo" id="promoBox" aria-label="How to promote" hidden>
+    <span class="promo-label">Want your ad here?</span>
     <p class="promo-main">E-mail <a href="mailto:0253@student.tasisportugal.org">0253@student.tasisportugal.org</a></p>
     <p class="promo-price">50&cent; per ad</p>
+    <ol class="promo-steps">
+      <li>E-mail us what you want to promote: a title, a short text and a link if you have one.</li>
+      <li>Pay 50&cent; for each ad.</li>
+      <li>Your ad is posted here, in the Promotions tab.</li>
+    </ol>
   </aside>
 
   <main class="feed" id="feed" aria-live="polite"></main>
@@ -910,6 +940,7 @@ Long posts like this one fold up, and "Read more" opens them.`
   var feed = document.getElementById("feed");
   var filtersEl = document.getElementById("filters");
   var newCountEl = document.getElementById("newCount");
+  var promoBox = document.getElementById("promoBox");
 
   // If the list above has a typo, the browser never creates ANNOUNCEMENTS.
   // Say so in plain words instead of showing a blank page.
@@ -924,8 +955,9 @@ Long posts like this one fold up, and "Read more" opens them.`
     return;
   }
 
-  var TAGS = ["Event", "Site News"];
-  var TAG_CLASS = { "Event": "t-event", "Site News": "t-site" };
+  var TAGS = ["Event", "Site News", "Promotion"];
+  var TAB_LABEL = { "Promotion": "Promotions" };
+  var TAG_CLASS = { "Event": "t-event", "Site News": "t-site", "Promotion": "t-promo" };
   var MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   var STORE_KEY = "usforge-news-seen-v1";
 
@@ -1090,11 +1122,15 @@ Long posts like this one fold up, and "Read more" opens them.`
 
   function render() {
     feed.textContent = "";
-    var list = posts.filter(function (p) { return current === "All" || p.tag === current; });
+    // Promotions live in their own tab and stay out of the main feed.
+    var list = posts.filter(function (p) {
+      return current === "All" ? p.tag !== "Promotion" : p.tag === current;
+    });
+    promoBox.hidden = current !== "Promotion";
 
     if (!list.length) {
       feed.appendChild(el("div", "empty", posts.length
-        ? "Nothing here yet. Try another filter!"
+        ? (current === "Promotion" ? "No promotions yet. Yours could be the first!" : "Nothing here yet. Try another tab!")
         : "No news yet. Check back soon!"));
       return;
     }
@@ -1111,7 +1147,7 @@ Long posts like this one fold up, and "Read more" opens them.`
   }
 
   ["All"].concat(TAGS).forEach(function (tag) {
-    var b = el("button", TAG_CLASS[tag] || "", tag);
+    var b = el("button", TAG_CLASS[tag] || "", TAB_LABEL[tag] || tag);
     b.type = "button";
     b.setAttribute("aria-pressed", String(tag === current));
     b.addEventListener("click", function () {

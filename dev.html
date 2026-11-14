@@ -167,6 +167,7 @@
 
   .t-event  { --c: var(--event); }
   .t-site   { --c: var(--site); }
+  .t-promo  { --c: var(--gold); }
   .t-other  { --c: var(--other); }
 
   .card {
@@ -252,6 +253,7 @@
               <select id="fTag">
                 <option>Event</option>
                 <option>Site News</option>
+                <option>Promotion</option>
               </select>
             </div>
           </div>
@@ -320,7 +322,7 @@
   var END_MARK = "// <<< ANNOUNCEMENTS END";
   var KEEP = " (do not change or delete this line)";
   var DRAFT_KEY = "usforge-news-editor-draft-v1";
-  var TAG_CLASS = { "Event": "t-event", "Site News": "t-site" };
+  var TAG_CLASS = { "Event": "t-event", "Site News": "t-site", "Promotion": "t-promo" };
   var MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
   function $(id) { return document.getElementById(id); }
