@@ -295,6 +295,59 @@ Long posts like this one fold up, and "Read more" opens them.`
     outline-offset: 2px;
   }
 
+  /* ---------- Promotions ---------- */
+
+  .promo {
+    position: relative;
+    margin-top: 14px;
+    padding: 14px clamp(16px, 4vw, 24px) 14px;
+    isolation: isolate;
+    background: var(--gold);
+    text-align: center;
+    clip-path: polygon(14px 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%, 0 14px);
+    animation: pop .45s cubic-bezier(.2, 1.2, .4, 1) both;
+  }
+
+  .promo::before {
+    content: "";
+    position: absolute;
+    inset: 2px;
+    z-index: -1;
+    background:
+      linear-gradient(135deg, rgba(242, 209, 71, .2), transparent 60%),
+      var(--card);
+    clip-path: polygon(13px 0, 100% 0, 100% calc(100% - 13px), calc(100% - 13px) 100%, 0 100%, 0 13px);
+  }
+
+  .promo-label {
+    display: inline-block;
+    padding: 2px 16px;
+    background: var(--gold);
+    color: #111113;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    clip-path: polygon(7px 0, 100% 0, calc(100% - 7px) 100%, 0 100%);
+  }
+
+  .promo-main {
+    margin: 8px 0 0;
+    font-size: clamp(15px, 4.2vw, 20px);
+    font-weight: 800;
+    overflow-wrap: anywhere;
+  }
+
+  .promo-main a { color: var(--gold); text-decoration: none; }
+  .promo-main a:hover { text-decoration: underline; }
+
+  .promo-price {
+    margin: 2px 0 0;
+    color: var(--ink-soft);
+    font-size: 13px;
+    font-weight: 600;
+  }
+
   /* ---------- Cards ---------- */
 
   .feed { display: grid; gap: 16px; margin-top: 10px; }
@@ -742,6 +795,13 @@ Long posts like this one fold up, and "Read more" opens them.`
   </header>
 
   <nav class="filters" id="filters" aria-label="Filter news by type"></nav>
+
+  <!-- Promotions: change the e-mail address or the price here -->
+  <aside class="promo" aria-label="Promotions">
+    <span class="promo-label">Promotions</span>
+    <p class="promo-main">E-mail <a href="mailto:0253@student.tasisportugal.org">0253@student.tasisportugal.org</a></p>
+    <p class="promo-price">50&cent; per ad</p>
+  </aside>
 
   <main class="feed" id="feed" aria-live="polite"></main>
 
