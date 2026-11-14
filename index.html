@@ -475,6 +475,164 @@ Long posts like this one fold up, and "Read more" opens them.`
   .problem { border-color: var(--gold); text-align: left; }
   .problem b { color: var(--gold); }
 
+  /* ---------- Title screen ---------- */
+
+  body.title-open { overflow: hidden; }
+
+  .title {
+    position: fixed;
+    inset: 0;
+    z-index: 30;
+    display: grid;
+    place-items: center;
+    padding: 16px;
+    overflow: hidden;
+    background:
+      radial-gradient(ellipse at 50% 42%, rgba(91, 143, 249, .28), transparent 62%),
+      radial-gradient(ellipse at 50% 100%, rgba(242, 209, 71, .12), transparent 55%),
+      var(--bg);
+    cursor: pointer;
+    transition: opacity .45s ease, transform .45s ease;
+  }
+
+  .title.leaving { opacity: 0; transform: scale(1.06); pointer-events: none; }
+
+  /* Faint moving grid */
+  .title-grid {
+    position: absolute;
+    inset: -60px;
+    background:
+      linear-gradient(rgba(91, 143, 249, .09) 1px, transparent 1px) 0 0 / 44px 44px,
+      linear-gradient(90deg, rgba(91, 143, 249, .09) 1px, transparent 1px) 0 0 / 44px 44px;
+    -webkit-mask-image: radial-gradient(ellipse at center, #000 20%, transparent 75%);
+    mask-image: radial-gradient(ellipse at center, #000 20%, transparent 75%);
+    animation: gridPan 6s linear infinite;
+  }
+
+  .title .corner {
+    position: absolute;
+    width: clamp(90px, 34vmin, 380px);
+    height: clamp(90px, 34vmin, 380px);
+    transform: var(--flip);
+    animation: cornerIn .7s cubic-bezier(.2, .9, .3, 1) both;
+  }
+
+  .title .corner.tl { top: 0; left: 0; --flip: scale(1, 1); }
+  .title .corner.tr { top: 0; right: 0; --flip: scale(-1, 1); }
+  .title .corner.bl { bottom: 0; left: 0; --flip: scale(1, -1); }
+  .title .corner.br { bottom: 0; right: 0; --flip: scale(-1, -1); }
+
+  .title-box {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 100%;
+    text-align: center;
+  }
+
+  .title-logo {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: center;
+    gap: .16em .26em;
+    font-size: clamp(30px, min(13vw, 20vh), 112px); /* logo is sized in em */
+    line-height: 1;
+  }
+
+  .title-logo .logo {
+    filter: drop-shadow(0 .05em 0 rgba(0, 0, 0, .6)) drop-shadow(0 0 .22em rgba(91, 143, 249, .55));
+  }
+
+  /* Each letter is drawn stroke by stroke */
+  .title-logo .logo path, .title-logo .logo circle {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 0;
+    animation: drawIn .7s ease-out both;
+  }
+
+  .title-logo .news { animation: stamp .45s cubic-bezier(.2, 1.6, .4, 1) 1.05s both; }
+
+  .title-rule {
+    width: min(78vw, 560px);
+    height: 3px;
+    margin-top: clamp(14px, 3.5vh, 26px);
+    background: linear-gradient(90deg, transparent, var(--gold) 20%, var(--gold) 80%, transparent);
+    animation: ruleIn .6s ease-out 1.2s both;
+  }
+
+  .title-tag {
+    margin: clamp(10px, 2.4vh, 16px) 0 0;
+    color: var(--ink-soft);
+    font-size: clamp(11px, 2.6vmin, 15px);
+    font-weight: 700;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    animation: fadeUp .5s ease-out 1.4s both;
+  }
+
+  .title-new {
+    margin: 12px 0 0;
+    color: var(--gold);
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    animation: fadeUp .5s ease-out 1.75s both;
+  }
+
+  .title-enter {
+    margin-top: clamp(18px, 4.5vh, 34px);
+    animation: fadeUp .5s ease-out 1.6s both;
+  }
+
+  .title-btn {
+    padding: 13px 44px;
+    border: 0;
+    background: var(--gold);
+    color: #111113;
+    font: inherit;
+    font-size: clamp(15px, 3.4vmin, 19px);
+    font-weight: 900;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    cursor: pointer;
+    clip-path: polygon(14px 0, 100% 0, calc(100% - 14px) 100%, 0 100%);
+    animation: glow 1.8s ease-in-out 2.2s infinite;
+  }
+
+  .title-btn:hover { background: #ffe26a; }
+  .title-btn:focus-visible { outline-offset: -4px; outline-color: #111113; }
+
+  .title-by {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: clamp(8px, 2.5vh, 20px);
+    color: var(--ink-dim);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .2em;
+    text-align: center;
+    text-transform: uppercase;
+    animation: fadeUp .5s ease-out 1.9s both;
+  }
+
+  .title-by b { color: var(--gold); }
+  .title-by b + b { color: var(--blue); }
+
+  @keyframes drawIn { from { stroke-dashoffset: 1; } }
+  @keyframes stamp { from { opacity: 0; transform: rotate(-4deg) scale(2.2); } }
+  @keyframes ruleIn { from { opacity: 0; transform: scaleX(0); } }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } }
+  @keyframes cornerIn { from { opacity: 0; } }
+  @keyframes gridPan { to { transform: translate(44px, 44px); } }
+  @keyframes glow {
+    0%, 100% { filter: brightness(1); transform: scale(1); }
+    50%      { filter: brightness(1.15); transform: scale(1.05); }
+  }
+
   /* ---------- Animations ---------- */
 
   @keyframes pop {
@@ -625,6 +783,65 @@ Long posts like this one fold up, and "Read more" opens them.`
   </footer>
 </div>
 
+<!-- Title screen: shown first, closes on click, tap or key press -->
+<div class="title" id="title" role="dialog" aria-label="UsForge News. Press Enter to read the news.">
+  <div class="title-grid" aria-hidden="true"></div>
+  <svg class="corner tl" aria-hidden="true"><use href="#cornerA"/></svg>
+  <svg class="corner tr" aria-hidden="true"><use href="#cornerB"/></svg>
+  <svg class="corner bl" aria-hidden="true"><use href="#cornerB"/></svg>
+  <svg class="corner br" aria-hidden="true"><use href="#cornerA"/></svg>
+  <div class="title-box">
+    <div class="title-logo" id="titleLogo" aria-hidden="true"></div>
+    <div class="title-rule" aria-hidden="true"></div>
+    <p class="title-tag">Site news and events, fresh from the forge</p>
+    <div class="title-enter"><button type="button" class="title-btn" id="titleBtn">Enter</button></div>
+    <p class="title-new" id="titleNew" hidden></p>
+  </div>
+  <div class="title-by">Made by <b>Lazy</b> <b>Studios</b></div>
+</div>
+
+<script>
+/* Title screen. Nothing to edit here for announcements. */
+(function () {
+  "use strict";
+  var title = document.getElementById("title");
+  var btn = document.getElementById("titleBtn");
+  var slot = document.getElementById("titleLogo");
+
+  // Reuse the header logo so it only has to be drawn once in this file.
+  var logo = document.querySelector(".hero .logo").cloneNode(true);
+  var strokes = logo.querySelectorAll("path, circle");
+  for (var i = 0; i < strokes.length; i++) {
+    strokes[i].setAttribute("pathLength", "1");
+    strokes[i].style.animationDelay = (0.15 + i * 0.11) + "s";
+  }
+  slot.appendChild(logo);
+  slot.appendChild(document.querySelector(".hero .news").cloneNode(true));
+
+  document.body.classList.add("title-open");
+  try { btn.focus({ preventScroll: true }); } catch (e) {}
+
+  var done = false;
+  function enter() {
+    if (done) return;
+    done = true;
+    title.classList.add("leaving");
+    document.body.classList.remove("title-open");
+    window.removeEventListener("keydown", onKey);
+    // Tell the news feed it is now on screen.
+    document.dispatchEvent(new Event("usforge-enter"));
+    setTimeout(function () { title.hidden = true; }, 500);
+  }
+
+  function onKey(e) {
+    if (e.key === "Enter" || e.key === " " || e.key === "Escape") { e.preventDefault(); enter(); }
+  }
+
+  title.addEventListener("click", enter);
+  window.addEventListener("keydown", onKey);
+})();
+</script>
+
 <script>
 (function () {
   "use strict";
@@ -714,6 +931,11 @@ Long posts like this one fold up, and "Read more" opens them.`
   if (newCount) {
     newCountEl.textContent = newCount + " new";
     newCountEl.hidden = false;
+    var titleNew = document.getElementById("titleNew");
+    if (titleNew) {
+      titleNew.textContent = "\u2605 " + newCount + (newCount === 1 ? " new post" : " new posts");
+      titleNew.hidden = false;
+    }
   }
 
   function markSeen(id) {
@@ -840,7 +1062,13 @@ Long posts like this one fold up, and "Read more" opens them.`
     filtersEl.appendChild(b);
   });
 
-  render();
+  // Wait for the title screen to close, so cards animate in (and count as
+  // seen) only once the visitor can actually see them.
+  if (document.body.classList.contains("title-open")) {
+    document.addEventListener("usforge-enter", render, { once: true });
+  } else {
+    render();
+  }
 
   var resizeTimer;
   window.addEventListener("resize", function () {
