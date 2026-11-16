@@ -393,7 +393,7 @@ Promotions only show up in the Promotions tab.`
     background: var(--edge);
     clip-path: polygon(0 0, calc(100% - var(--cut)) 0, 100% var(--cut), 100% 100%, var(--cut) 100%, 0 calc(100% - var(--cut)));
     animation: pop .45s cubic-bezier(.2, 1.2, .4, 1) both;
-    transition: background .15s;
+    transition: background .15s, transform .18s ease-out;
   }
 
   .card::before {
@@ -409,7 +409,7 @@ Promotions only show up in the Promotions tab.`
   }
 
   @media (hover: hover) {
-    .card:hover { --edge: var(--gold); }
+    .card:hover { --edge: var(--gold); transform: translateY(-2px); }
   }
 
   .card.pinned { --edge: var(--gold); }
@@ -515,10 +515,10 @@ Promotions only show up in the Promotions tab.`
     text-transform: uppercase;
     text-decoration: none;
     clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
-    transition: background .12s;
+    transition: background .12s, padding .15s ease-out;
   }
 
-  .link:hover { background: var(--gold); }
+  .link:hover { background: var(--gold); padding-left: 26px; padding-right: 18px; }
   .link:focus-visible { outline-offset: -3px; outline-color: #111113; }
 
   .studio {
@@ -552,6 +552,34 @@ Promotions only show up in the Promotions tab.`
 
   .problem { border-color: var(--gold); text-align: left; }
   .problem b { color: var(--gold); }
+
+  /* ---------- Sound button ---------- */
+
+  .sound-btn {
+    position: fixed;
+    right: 10px;
+    bottom: 10px;
+    z-index: 40;
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    border: 2px solid var(--gold);
+    border-radius: 50%;
+    background: rgba(17, 17, 19, .9);
+    color: var(--gold);
+    cursor: pointer;
+    transition: transform .12s, background .12s;
+  }
+
+  .sound-btn:hover { background: #20263a; }
+  .sound-btn:active { transform: scale(.9); }
+  .sound-btn svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .sound-btn .off { display: none; }
+  .sound-btn[aria-pressed="false"] { border-color: var(--card-line); color: var(--ink-dim); }
+  .sound-btn[aria-pressed="false"] .on { display: none; }
+  .sound-btn[aria-pressed="false"] .off { display: inline; }
 
   /* ---------- Title screen ---------- */
 
@@ -724,6 +752,24 @@ Promotions only show up in the Promotions tab.`
     to   { opacity: 1; transform: none; }
   }
 
+  /* Slow, quiet motion so the page never sits completely still */
+  .deco .tl, .deco .br { animation: driftA 9s ease-in-out infinite alternate; }
+  .deco .tr, .deco .bl { animation: driftB 11s ease-in-out infinite alternate; }
+  .hero .logo { animation: breathe 5s ease-in-out infinite; }
+  .filters button[aria-pressed="true"] { animation: tabIn .28s cubic-bezier(.2, 1.5, .4, 1); }
+  .text.opened { animation: unfold .3s ease-out; }
+  .promo-label, .card.pinned .pin { animation: shimmer 3.5s ease-in-out infinite; }
+
+  @keyframes driftA { from { translate: 0 0; opacity: 1; } to { translate: 6px 6px; opacity: .82; } }
+  @keyframes driftB { from { translate: 0 0; opacity: .85; } to { translate: -5px 5px; opacity: 1; } }
+  @keyframes breathe {
+    0%, 100% { filter: drop-shadow(0 0 0 rgba(91, 143, 249, 0)); }
+    50%      { filter: drop-shadow(0 0 .22em rgba(91, 143, 249, .6)); }
+  }
+  @keyframes tabIn { from { transform: scale(.9); } }
+  @keyframes unfold { from { opacity: .35; transform: translateY(-4px); } }
+  @keyframes shimmer { 0%, 100% { filter: brightness(1); } 50% { filter: brightness(1.25); } }
+
   @keyframes twinkle {
     0%, 100% { opacity: 1; }
     50%      { opacity: .25; }
@@ -874,6 +920,94 @@ Promotions only show up in the Promotions tab.`
   </footer>
 </div>
 
+<!-- Sound on/off -->
+<button type="button" class="sound-btn" id="soundBtn" aria-pressed="true" aria-label="Sound" title="Sound on/off">
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M4 9.5v5h3.5L12 18.5v-13L7.5 9.5Z" fill="currentColor"/>
+    <path class="on" d="M15.5 9a4.2 4.2 0 0 1 0 6M18 6.5a7.8 7.8 0 0 1 0 11"/>
+    <path class="off" d="M16 9.5l5 5M21 9.5l-5 5"/>
+  </svg>
+</button>
+
+<script>
+/* Sound effects, made by the browser itself (no sound files).
+   Nothing to edit here for announcements. */
+(function () {
+  "use strict";
+  var KEY = "usforge-news-sound-v1";
+  var btn = document.getElementById("soundBtn");
+  var AC = window.AudioContext || window.webkitAudioContext;
+  var ctx = null, master = null, on = true;
+
+  try { on = localStorage.getItem(KEY) !== "off"; } catch (e) {}
+
+  // Browsers only allow sound after a click, tap or key press, so the
+  // audio engine is created the first time a sound is asked for.
+  function ready() {
+    if (!AC) return false;
+    if (!ctx) {
+      try {
+        ctx = new AC();
+        master = ctx.createGain();
+        master.gain.value = 0.5;
+        master.connect(ctx.destination);
+      } catch (e) { ctx = null; return false; }
+    }
+    if (ctx.state === "suspended") ctx.resume();
+    return true;
+  }
+
+  function note(freq, delay, length, type, volume, slideTo) {
+    var t = ctx.currentTime + delay;
+    var osc = ctx.createOscillator(), gain = ctx.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, t);
+    if (slideTo) osc.frequency.exponentialRampToValueAtTime(slideTo, t + length);
+    gain.gain.setValueAtTime(0.0001, t);
+    gain.gain.exponentialRampToValueAtTime(volume, t + 0.012);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + length);
+    osc.connect(gain);
+    gain.connect(master);
+    osc.start(t);
+    osc.stop(t + length + 0.02);
+  }
+
+  var SOUNDS = {
+    enter: function () {
+      note(196, 0, 0.7, "sine", 0.1);
+      [392, 523.25, 659.25, 783.99].forEach(function (f, i) { note(f, i * 0.07, 0.55, "triangle", 0.1); });
+    },
+    tab:    function () { note(620, 0, 0.09, "triangle", 0.1, 820); },
+    open:   function () { note(520, 0, 0.1, "sine", 0.09); note(780, 0.06, 0.14, "sine", 0.08); },
+    close:  function () { note(780, 0, 0.1, "sine", 0.08); note(520, 0.06, 0.14, "sine", 0.08); },
+    link:   function () { note(880, 0, 0.08, "triangle", 0.09, 1100); },
+    toggle: function () { note(700, 0, 0.08, "sine", 0.09); }
+  };
+
+  window.UsForgeSound = {
+    play: function (name) {
+      if (!on || !SOUNDS[name] || !ready()) return;
+      try { SOUNDS[name](); } catch (e) {}
+    }
+  };
+
+  function show() {
+    btn.setAttribute("aria-pressed", String(on));
+    btn.setAttribute("aria-label", on ? "Sound is on. Turn sound off" : "Sound is off. Turn sound on");
+  }
+
+  if (!AC) btn.hidden = true;
+  show();
+  btn.addEventListener("click", function (e) {
+    e.stopPropagation(); // don't close the title screen
+    on = !on;
+    try { localStorage.setItem(KEY, on ? "on" : "off"); } catch (err) {}
+    show();
+    window.UsForgeSound.play("toggle");
+  });
+})();
+</script>
+
 <!-- Title screen: shown first, closes on click, tap or key press -->
 <div class="title" id="title" role="dialog" aria-label="UsForge News. Press Enter to read the news.">
   <div class="title-grid" aria-hidden="true"></div>
@@ -917,6 +1051,7 @@ Promotions only show up in the Promotions tab.`
     if (done) return;
     done = true;
     title.classList.add("leaving");
+    if (window.UsForgeSound) window.UsForgeSound.play("enter");
     document.body.classList.remove("title-open");
     window.removeEventListener("keydown", onKey);
     // Tell the news feed it is now on screen.
@@ -1061,6 +1196,10 @@ Promotions only show up in the Promotions tab.`
 
   /* ---------- Building the page ---------- */
 
+  function sound(name) {
+    if (window.UsForgeSound) window.UsForgeSound.play(name);
+  }
+
   function el(tag, cls, text) {
     var n = document.createElement(tag);
     if (cls) n.className = cls;
@@ -1090,6 +1229,7 @@ Promotions only show up in the Promotions tab.`
       a.href = p.link;
       a.target = "_blank";
       a.rel = "noopener noreferrer";
+      a.addEventListener("click", function () { sound("link"); });
       actions.appendChild(a);
     }
     var more = el("button", "more", "Read more ▾");
@@ -1098,6 +1238,8 @@ Promotions only show up in the Promotions tab.`
     more.setAttribute("aria-expanded", "false");
     more.addEventListener("click", function () {
       var open = text.classList.toggle("clamp") === false;
+      text.classList.toggle("opened", open);
+      sound(open ? "open" : "close");
       more.textContent = open ? "Show less ▴" : "Read more ▾";
       more.setAttribute("aria-expanded", String(open));
     });
@@ -1152,6 +1294,7 @@ Promotions only show up in the Promotions tab.`
     b.setAttribute("aria-pressed", String(tag === current));
     b.addEventListener("click", function () {
       current = tag;
+      sound("tab");
       var all = filtersEl.querySelectorAll("button");
       for (var i = 0; i < all.length; i++) all[i].setAttribute("aria-pressed", String(all[i] === b));
       render();
