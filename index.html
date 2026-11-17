@@ -370,6 +370,31 @@ Promotions only show up in the Promotions tab.`
   }
 
   .promo-steps li { margin: 3px 0; }
+
+  .promo-pay {
+    display: inline-block;
+    margin-top: 12px;
+    padding: 10px 30px;
+    background: var(--gold);
+    color: #111113;
+    font-size: 15px;
+    font-weight: 900;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    text-decoration: none;
+    clip-path: polygon(12px 0, 100% 0, calc(100% - 12px) 100%, 0 100%);
+    transition: background .12s, padding .15s ease-out;
+  }
+
+  .promo-pay:hover { background: #ffe26a; padding-left: 36px; padding-right: 24px; }
+  .promo-pay:focus-visible { outline-offset: -4px; outline-color: #111113; }
+
+  /* Unreported News box: blue instead of gold */
+  .promo.tip { background: var(--blue); }
+  .promo.tip::before {
+    background: linear-gradient(135deg, rgba(91, 143, 249, .22), transparent 60%), var(--card);
+  }
+  .promo.tip .promo-label { background: var(--blue); }
   .promo-steps li::marker { color: var(--gold); font-weight: 800; }
 
   /* ---------- Cards ---------- */
@@ -379,6 +404,7 @@ Promotions only show up in the Promotions tab.`
   .t-event  { --c: var(--event); }
   .t-site   { --c: var(--site); }
   .t-promo  { --c: var(--gold); }
+  .t-tip    { --c: var(--blue); }
   .t-other  { --c: var(--other); }
 
   /* Cards have two cut corners. The outer shape is the border colour and
@@ -867,15 +893,28 @@ Promotions only show up in the Promotions tab.`
 
   <nav class="filters" id="filters" aria-label="Filter news by type"></nav>
 
-  <!-- Promotions tab: change the e-mail address, price or steps here -->
+  <!-- Promotions tab: change the e-mail address, price, payment link or steps here -->
   <aside class="promo" id="promoBox" aria-label="How to promote" hidden>
     <span class="promo-label">Want your ad here?</span>
-    <p class="promo-main">E-mail <a href="mailto:henriquexc@icloud.com">henriquexc@icloud.com</a></p>
+    <p class="promo-main">E-mail <a href="mailto:henriquexc@icloud.com?subject=UsForge%20ad">henriquexc@icloud.com</a></p>
     <p class="promo-price">50&cent; per ad</p>
+    <a class="promo-pay" href="https://buy.stripe.com/14A9AW5HQeSO6By0A80x203" target="_blank" rel="noopener noreferrer">Pay 50&cent; by card &#8599;</a>
     <ol class="promo-steps">
       <li>E-mail us what you want to promote: a title, a short text and a link if you have one.</li>
-      <li>Pay 50&cent; for each ad.</li>
+      <li>Pay 50&cent; for each ad with the button above.</li>
       <li>Your ad is posted here, in the Promotions tab.</li>
+    </ol>
+  </aside>
+
+  <!-- Unreported News tab: change the e-mail address or text here -->
+  <aside class="promo tip" id="tipBox" aria-label="Send us news" hidden>
+    <span class="promo-label">Got news we missed?</span>
+    <p class="promo-main">E-mail <a href="mailto:henriquexc@icloud.com?subject=UsForge%20news%20tip">henriquexc@icloud.com</a></p>
+    <p class="promo-price">Free. Tell us what's happening and we may post it.</p>
+    <ol class="promo-steps">
+      <li>Something happening on UsForge that isn't on the board yet? A new game, a bug, an event, a record?</li>
+      <li>E-mail us what happened, when, and a link if you have one.</li>
+      <li>If it's news, it goes up on the board.</li>
     </ol>
   </aside>
 
@@ -1076,6 +1115,8 @@ Promotions only show up in the Promotions tab.`
   var filtersEl = document.getElementById("filters");
   var newCountEl = document.getElementById("newCount");
   var promoBox = document.getElementById("promoBox");
+  var tipBox = document.getElementById("tipBox");
+  var TIP_TAB = "Unreported News"; // a tab with only the "send us news" box
 
   // If the list above has a typo, the browser never creates ANNOUNCEMENTS.
   // Say so in plain words instead of showing a blank page.
@@ -1269,6 +1310,8 @@ Promotions only show up in the Promotions tab.`
       return current === "All" ? p.tag !== "Promotion" : p.tag === current;
     });
     promoBox.hidden = current !== "Promotion";
+    tipBox.hidden = current !== TIP_TAB;
+    if (current === TIP_TAB) return;
 
     if (!list.length) {
       feed.appendChild(el("div", "empty", posts.length
@@ -1288,8 +1331,11 @@ Promotions only show up in the Promotions tab.`
     checkClamps();
   }
 
-  ["All"].concat(TAGS).forEach(function (tag) {
-    var b = el("button", TAG_CLASS[tag] || "", TAB_LABEL[tag] || tag);
+  var boxLinks = document.querySelectorAll(".promo a");
+  for (var bl = 0; bl < boxLinks.length; bl++) boxLinks[bl].addEventListener("click", function () { sound("link"); });
+
+  ["All"].concat(TAGS, [TIP_TAB]).forEach(function (tag) {
+    var b = el("button", tag === TIP_TAB ? "t-tip" : (TAG_CLASS[tag] || ""), TAB_LABEL[tag] || tag);
     b.type = "button";
     b.setAttribute("aria-pressed", String(tag === current));
     b.addEventListener("click", function () {
